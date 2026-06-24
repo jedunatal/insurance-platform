@@ -14,7 +14,7 @@ use Livewire\WithPagination;
 
 #[Title('Leads')]
 #[Layout('layouts.app')]
-final class ListAll extends Component
+final class ListAll extends Component 
 {
     use WithPagination;
 
@@ -99,8 +99,6 @@ final class ListAll extends Component
 
     public function render(): \Illuminate\View\View
     {
-        return view(
-            'livewire.lead.list-all'
-        );
+        return view('livewire.lead.list-all');
     }
 }
