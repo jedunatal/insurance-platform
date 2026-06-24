@@ -13,6 +13,12 @@ return new class extends Migration
 
             $table->string('name');
             $table->string('slug')->unique();
+            
+            // Novos campos adicionados
+            $table->string('email')->unique();
+            $table->string('phone', 20)->nullable();
+            $table->string('document', 20)->unique(); // CPF ou CNPJ
+            $table->string('plan')->default('classic'); // ou 'free', 'premium', etc.
 
             $table->boolean('is_active')
                 ->default(true);

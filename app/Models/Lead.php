@@ -28,11 +28,6 @@ class Lead extends Model
         'notes',
     ];
 
-    /**
-     * Casts automáticos do Laravel.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -47,6 +42,11 @@ class Lead extends Model
     | Relationships
     |--------------------------------------------------------------------------
     */
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
 
     public function assignedTo(): BelongsTo
     {
@@ -64,25 +64,39 @@ class Lead extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function scopeByStatus(Builder $query, LeadStatusEnum $status): Builder
+    public function scopeForTenant(Builder $query, int $tenantId): Builder
     {
+        return $query->where('tenant_id', $tenantId);
+    }
+
+    public function scopeByStatus(
+        Builder $query,
+        LeadStatusEnum $status
+    ): Builder {
         return $query->where('status', $status->value);
     }
 
-    public function scopeByConsultant(Builder $query, int $userId): Builder
-    {
+    public function scopeByConsultant(
+        Builder $query,
+        int $userId
+    ): Builder {
         return $query->where('assigned_to', $userId);
     }
 
-    public function scopeSearch(Builder $query, string $term): Builder
-    {
+    public function scopeSearch(
+        Builder $query,
+        string $term
+    ): Builder {
         $term = "%{$term}%";
 
-        return $query->where(static function (Builder $query) use ($term): void {
-            $query->where('name', 'like', $term)
-                ->orWhere('email', 'like', $term)
-                ->orWhere('phone', 'like', $term);
-        });
+        return $query->where(
+            static function (Builder $query) use ($term): void {
+                $query
+                    ->where('name', 'like', $term)
+                    ->orWhere('email', 'like', $term)
+                    ->orWhere('phone', 'like', $term);
+            }
+        );
     }
 
     public function scopeActive(Builder $query): Builder
@@ -95,8 +109,14 @@ class Lead extends Model
 
     public function scopeOverdue(Builder $query): Builder
     {
-        return $query->active()
+        return $query
+            ->active()
             ->whereNotNull('next_contact_at')
             ->where('next_contact_at', '<', now());
+    }
+
+    public function scopeCreatedToday(Builder $query): Builder
+    {
+        return $query->whereDate('created_at', today());
     }
 }

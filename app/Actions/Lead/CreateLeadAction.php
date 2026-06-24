@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\CRM;
+namespace App\Actions\Lead;
 
 use App\DTOs\LeadDTO;
 use App\Models\Lead;
