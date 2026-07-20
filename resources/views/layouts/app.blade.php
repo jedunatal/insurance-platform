@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="h-full bg-gray-100" lang="pt-BR">
+<html class="min-h-screen bg-gray-100 dark:bg-neutral-950" lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,7 +31,7 @@
 </head>
 
 <body
-    class="h-full bg-gray-100 dark:bg-black text-gray-900 dark:text-gray-100 transition-colors duration-200"
+    class="min-h-screen bg-gray-100 dark:bg-neutral-950 text-gray-900 dark:text-gray-100 transition-colors duration-200"
     x-data="{
         sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
         searchOpen: false,
@@ -141,7 +141,6 @@
                         <span class="text-sm font-semibold text-gray-900 dark:text-white">Jorge Eduardo</span>
                         <span class="text-xs text-gray-500 dark:text-neutral-400">Consultor Senior</span>
                     </span>
-                   
                 </button>
                 <div x-cloak x-show="userMenuOpen" @click.away="userMenuOpen = false" class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-neutral-950 py-2 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-neutral-800 focus:outline-none">
                     <div class="px-3 py-2 border-b border-gray-200 dark:border-neutral-800">

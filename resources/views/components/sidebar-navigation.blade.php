@@ -5,7 +5,10 @@
                 $navItems = [
                     ['name' => 'Inicio', 'route' => 'home', 'icon' => 'M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25'],
                     ['name' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z'],
+                    
+                    // CORREÇÃO AQUI: De 'leads' para 'leads.index'
                     ['name' => 'Clientes em potencial', 'route' => 'leads.index', 'icon' => 'M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z'],
+                    
                     ['name' => 'Segurados', 'route' => '#', 'icon' => 'M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z'],
                     ['name' => 'Apólices', 'route' => '#', 'icon' => 'm18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13'],
                     ['name' => 'Sinistros', 'route' => '#', 'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z'],
@@ -16,7 +19,10 @@
             @endphp
 
             @foreach($navItems as $item)
-                @php $isCurrent = request()->routeIs($item['route']); @endphp
+                @php 
+                    // DICA PRO: Usar o asterisco para manter o botão ativo mesmo se o usuário estiver criando ou editando um lead!
+                    $isCurrent = $item['route'] !== '#' && (request()->routeIs($item['route']) || request()->routeIs(explode('.', $item['route'])[0] . '.*')); 
+                @endphp
                 <li>
                     <a href="{{ $item['route'] !== '#' ? route($item['route']) : '#' }}"
                        class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors {{ $isCurrent ? 'bg-gray-50 text-[#295384]' : 'text-gray-700 hover:text-[#295384] hover:bg-gray-50' }}"
