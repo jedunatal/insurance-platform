@@ -3,54 +3,62 @@
 namespace App\Livewire\Lead;
 
 use App\Models\Lead;
-use Livewire\Component;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Schemas\Schema;
+use Illuminate\Contracts\View\View;
+use Livewire\Component;
 
-class Create extends Component implements HasActions, HasForms
+class Create extends Component implements HasActions, HasSchemas
 {
-    use InteractsWithForms;
     use InteractsWithActions;
+    use InteractsWithSchemas;
 
-    // O Filament guarda o estado dos inputs mapeados neste array
     public ?array $data = [];
 
     public function mount(): void
     {
-        // Preenche o formulário inicialmente (vazio ou com defaults)
-        $this->form->fill();
+        $this->form->fill([
+            'source' => 'manual',
+            'status' => 'novo',
+        ]);
     }
 
     public function form(Schema $schema): Schema
     {
         return $schema
-            ->components([
-                ...BaseForm::getFields()])
+            ->components(BaseForm::getFields())
             ->statePath('data')
             ->model(Lead::class);
     }
 
-    public function create(): void
+    public function save(): void
     {
-        // Valida e extrai os dados tratados pelo Schema do Filament
-        $state = $this->form->getState();
-        
-        // Exemplo de persistência usando o Model:
-        // \App\Models\Lead::create($state);
+        $data = $this->form->getState();
+
+        $record = BaseForm::create($data);
+
+        if (! $record) {
+            Notification::make()
+                ->danger()
+                ->title('Não foi possível cadastrar o lead!')
+                ->send();
+
+            return;
+        }
 
         Notification::make()
-            ->title('Lead cadastrado com sucesso!')
             ->success()
+            ->title('Cliente em potencial cadastrado com sucesso!')
             ->send();
 
         $this->redirectRoute('leads.index');
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.lead.create');
     }

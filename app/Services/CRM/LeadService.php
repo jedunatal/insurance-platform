@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Services;
+// Namespace alinhado com a estrutura de pastas app/Services/CRM
+namespace App\Services\CRM;
 
+// Actions e DTOs da camada de domínio do Lead
 use App\Actions\Lead\CreateLeadAction;
 use App\Actions\Lead\DeleteLeadAction;
 use App\Actions\Lead\UpdateLeadAction;
@@ -13,6 +15,9 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 final class LeadService
 {
+    /**
+     * Injeção de dependência das Actions responsáveis pelas operações de escrita
+     */
     public function __construct(
         private readonly CreateLeadAction $createAction,
         private readonly UpdateLeadAction $updateAction,
@@ -20,21 +25,53 @@ final class LeadService
     ) {
     }
 
+    /**
+     * Executa a criação de um novo Lead via Action
+     */
     public function create(LeadDTO $dto): Lead
     {
         return $this->createAction->execute($dto);
     }
 
+    /**
+     * Executa a atualização de um Lead existente via Action
+     */
     public function update(Lead $lead, LeadDTO $dto): Lead
     {
         return $this->updateAction->execute($lead, $dto);
     }
 
+    /**
+     * Executa a remoção do Lead via Action
+     */
     public function delete(Lead $lead): void
     {
         $this->deleteAction->execute($lead);
     }
 
+    /**
+     * Método wrapper para integração simplificada com o Livewire (ListAll)
+     */
+    public function paginate(
+        ?string $search = null,
+        ?LeadStatusEnum $status = null,
+        ?int $tenantId = null,
+        int $perPage = 15
+    ): LengthAwarePaginator {
+        // Resolve o tenant do usuário logado caso não seja informado explicitamente
+        $tenantId ??= auth()->user()?->tenant_id ?? 1;
+
+        return $this->list(
+            tenantId: $tenantId,
+            search: $search,
+            status: $status,
+            perPage: $perPage
+        );
+    }
+
+    /**
+     * Retorna a listagem de Leads filtrada e paginada para um Tenant
+     */
     public function list(
         int $tenantId,
         ?string $search = null,
@@ -58,6 +95,7 @@ final class LeadService
             )
             ->with([
                 'tenant:id,name',
+                'product:id,name', // Eager loading do Produto/Ramo de seguro
                 'assignedTo:id,name',
                 'createdBy:id,name',
             ])
@@ -66,6 +104,8 @@ final class LeadService
     }
 
     /**
+     * Busca um Lead específico restrito ao Tenant atual
+     *
      * @throws ModelNotFoundException
      */
     public function findForTenant(
@@ -76,12 +116,16 @@ final class LeadService
             ->forTenant($tenantId)
             ->with([
                 'tenant:id,name',
+                'product:id,name', // Eager loading do Produto/Ramo
                 'assignedTo:id,name',
                 'createdBy:id,name',
             ])
             ->findOrFail($id);
     }
 
+    /**
+     * Totaliza os leads ativos (em negociação)
+     */
     public function countActive(int $tenantId): int
     {
         return Lead::query()
@@ -90,6 +134,9 @@ final class LeadService
             ->count();
     }
 
+    /**
+     * Totaliza os leads criados na data de hoje
+     */
     public function countToday(int $tenantId): int
     {
         return Lead::query()
@@ -98,6 +145,9 @@ final class LeadService
             ->count();
     }
 
+    /**
+     * Totaliza os leads com agendamento de contato atrasado
+     */
     public function countOverdue(int $tenantId): int
     {
         return Lead::query()
@@ -107,6 +157,8 @@ final class LeadService
     }
 
     /**
+     * Agrupa e retorna a quantidade de leads por cada status do Enum
+     *
      * @return array<string, int>
      */
     public function countByStatus(int $tenantId): array

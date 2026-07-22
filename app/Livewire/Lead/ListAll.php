@@ -12,7 +12,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Title('Leads')]
+#[Title('Clientes em Potencial')]
 #[Layout('layouts.app')]
 final class ListAll extends Component 
 {
@@ -24,12 +24,6 @@ final class ListAll extends Component
     #[Url(as: 'status')]
     public string $statusFilter = '';
 
-    /*
-    |--------------------------------------------------------------------------
-    | Watchers
-    |--------------------------------------------------------------------------
-    */
-
     public function updatedSearch(): void
     {
         $this->resetPage();
@@ -40,24 +34,15 @@ final class ListAll extends Component
         $this->resetPage();
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Computed
-    |--------------------------------------------------------------------------
-    */
-
     #[Computed]
     public function leads(): LengthAwarePaginator
     {
         $status = filled($this->statusFilter)
-            ? LeadStatusEnum::from($this->statusFilter)
+            ? LeadStatusEnum::tryFrom($this->statusFilter)
             : null;
 
         return app(LeadService::class)->paginate(
-            search: filled($this->search)
-                ? $this->search
-                : null,
-
+            search: filled($this->search) ? $this->search : null,
             status: $status,
         );
     }
@@ -68,18 +53,10 @@ final class ListAll extends Component
         return LeadStatusEnum::cases();
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Actions
-    |--------------------------------------------------------------------------
-    */
-
     public function clearFilters(): void
     {
         $this->search = '';
-
         $this->statusFilter = '';
-
         $this->resetPage();
     }
 
@@ -90,12 +67,6 @@ final class ListAll extends Component
             id: $id
         );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Render
-    |--------------------------------------------------------------------------
-    */
 
     public function render(): \Illuminate\View\View
     {

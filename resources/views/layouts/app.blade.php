@@ -3,24 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insurance Platform</title>
+    <title>{{ $title ?? 'Insurance Platform' }}</title>
 
-    {{-- Script de Bloqueio de Flash (Garante que lê o localStorage corretamente antes de renderizar) --}}
+    {{-- Script de Tema Reativo (Suporta Carga Inicial + Livewire wire:navigate) --}}
     <script>
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        }
+        const applyTheme = () => {
+            const theme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (theme === 'dark' || (!theme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        };
+
+        // Aplica imediatamente antes da renderização da página
+        applyTheme();
+
+        // Re-aplica automaticamente a cada navegação SPA do Livewire
+        document.addEventListener('livewire:navigated', applyTheme);
     </script>
 
-    {{-- Assets do Projeto --}}
+    {{-- Assets do Projeto via Vite --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
+
+    {{-- Estilos Globais do Filament Forms & Actions --}}
+    @filamentStyles
+
     <style>
         [x-cloak] { display: none !important; }
         :root {
@@ -36,7 +46,7 @@
         sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
         searchOpen: false,
         mobileSidebarOpen: false,
-        isDark: document.documentElement.classList.contains('dark'),
+        isDark: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
         toggleSidebar() {
             this.sidebarCollapsed = !this.sidebarCollapsed;
             localStorage.setItem('sidebarCollapsed', this.sidebarCollapsed);
@@ -45,14 +55,13 @@
             this.searchOpen = !this.searchOpen;
         },
         toggleTheme() {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                this.isDark = false;
-            } else {
+            this.isDark = !this.isDark;
+            if (this.isDark) {
                 document.documentElement.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
-                this.isDark = true;
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
             }
         }
     }"
@@ -225,6 +234,12 @@
         </div>
     </main>
 </div>
+
+{{-- 🔔 Notificações e Modais Globais do Filament --}}
+@livewire('notifications')
+
+{{-- ⚡ Scripts Globais do Filament --}}
+@filamentScripts
 
 </body>
 </html>
