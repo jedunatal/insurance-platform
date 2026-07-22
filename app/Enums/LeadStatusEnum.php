@@ -4,11 +4,11 @@ namespace App\Enums;
 
 enum LeadStatusEnum: string
 {
-    case New = 'new';
-    case Contact = 'contact';
-    case Proposal = 'proposal';
-    case Converted = 'converted';
-    case Lost = 'lost';
+    case New = 'Novo';
+    case Contact = 'Contato';
+    case Proposal = 'Proposta';
+    case Converted = 'Convertido';
+    case Lost = 'Perdido';
 
     public function label(): string
     {
