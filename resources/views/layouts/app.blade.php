@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="min-h-screen bg-gray-100 dark:bg-neutral-950" lang="pt-BR">
+<html class="min-h-screen bg-gray-100 dark:bg-[#121827]" lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +41,7 @@
 </head>
 
 <body
-    class="min-h-screen bg-gray-100 dark:bg-neutral-950 text-gray-900 dark:text-gray-100 transition-colors duration-200"
+    class="min-h-screen bg-gray-100 dark:bg-[#121827] text-gray-900 dark:text-gray-100 transition-colors duration-200"
     x-data="{
         sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
         searchOpen: false,
@@ -69,7 +69,7 @@
 >
 
 {{-- Top bar --}}
-<header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-950 transition-colors duration-200 shadow-xs">
+<header class="fixed top-0 inset-x-0 z-50 border-b border-gray-200 bg-white dark:border-neutral-800 dark:bg-[#1F2937] transition-colors duration-200 shadow-xs">
     <div class="relative flex h-14 items-center justify-between px-4 sm:px-6">
         
         {{-- Hambúrguer + Botão Recolher Menu --}}
@@ -203,8 +203,9 @@
 </div>
 
 {{-- Sidebar Estática para Desktop --}}
+{{-- Troque dark:bg-neutral-950 por dark:bg-[#1F2937] --}}
 <div
-    class="hidden lg:fixed lg:top-14 lg:bottom-0 lg:left-0 lg:z-40 lg:flex lg:flex-col transition-[width] duration-200 ease-in-out border-r border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 py-4"
+    class="hidden lg:fixed lg:top-14 lg:bottom-0 lg:left-0 lg:z-40 lg:flex lg:flex-col transition-[width] duration-200 ease-in-out border-r border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#1F2937] py-4"
     :class="sidebarCollapsed ? 'lg:w-16 px-2' : 'lg:w-60 px-6'"
 >
     <nav class="flex flex-1 flex-col">
