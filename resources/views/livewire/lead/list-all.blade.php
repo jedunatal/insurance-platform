@@ -14,7 +14,7 @@
     </x-page-header>
 
     {{-- Card de Filtros Reativo --}}
-    <x-card class="!p-5">
+    <x-card class="!p-5 dark:!bg-[#1F2937] dark:!border-gray-700">
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
                 
@@ -24,7 +24,7 @@
                         wire:model.live.debounce.300ms="search" 
                         type="text" 
                         placeholder="Buscar por nome, e-mail ou telefone..." 
-                        class="w-full rounded-lg border-gray-300 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:border-[#295384] focus:ring-[#295384] text-sm py-2 px-3 shadow-xs"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#111827] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-400 focus:border-[#295384] focus:ring-[#295384] text-sm py-2 px-3 shadow-xs"
                     />
                 </div>
 
@@ -32,7 +32,7 @@
                 <div class="w-full sm:w-52">
                     <select 
                         wire:model.live="statusFilter" 
-                        class="w-full rounded-lg border-gray-300 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 text-gray-900 dark:text-white focus:border-[#295384] focus:ring-[#295384] text-sm py-2 px-3 shadow-xs"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#111827] text-gray-900 dark:text-white focus:border-[#295384] focus:ring-[#295384] text-sm py-2 px-3 shadow-xs"
                     >
                         <option value="">Todos os Status</option>
                         @foreach($this->statuses as $status)
@@ -47,7 +47,7 @@
                         <button 
                             wire:click="clearFilters" 
                             type="button" 
-                            class="px-3.5 py-2 text-sm font-semibold text-gray-600 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+                            class="px-3.5 py-2 text-sm font-semibold text-gray-600 dark:text-gray-200 bg-gray-100 dark:bg-[#111827] hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
                             Limpar
                         </button>
@@ -58,9 +58,9 @@
     </x-card>
 
     {{-- Tabela de Dados --}}
-    <div class="overflow-x-auto border border-gray-200 dark:border-neutral-800 rounded-xl bg-white dark:bg-neutral-950 shadow-xs">
-        <table class="w-full text-sm text-left text-gray-500 dark:text-neutral-400">
-            <thead class="text-xs text-gray-700 dark:text-neutral-300 uppercase bg-gray-50/80 dark:bg-neutral-900/50 border-b border-gray-200 dark:border-neutral-800 font-bold">
+    <div class="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-[#1F2937] shadow-xs">
+        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-300">
+            <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50/80 dark:bg-[#111827]/50 border-b border-gray-200 dark:border-gray-700 font-bold">
                 <tr>
                     <th class="px-6 py-3.5">Cliente / Ramo</th>
                     <th class="px-6 py-3.5">Contato</th>
@@ -68,9 +68,9 @@
                     <th class="px-6 py-3.5 text-right">Ações</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-neutral-900">
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                 @forelse($this->leads as $lead)
-                    <tr class="hover:bg-gray-50/50 dark:hover:bg-neutral-900/20 transition-colors">
+                    <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition-colors">
                         <td class="px-6 py-4">
                             <a href="{{ route('leads.show', $lead) }}" wire:navigate class="font-bold text-gray-950 dark:text-white hover:text-[#295384] dark:hover:text-blue-400 transition-colors">
                                 {{ $lead->name }}
@@ -81,7 +81,7 @@
                         </td>
 
                         <td class="px-6 py-4">
-                            <p class="text-gray-600 dark:text-neutral-300">{{ $lead->email ?? 'Sem e-mail' }}</p>
+                            <p class="text-gray-600 dark:text-gray-300">{{ $lead->email ?? 'Sem e-mail' }}</p>
                             @if($lead->phone)
                                 <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
                                     {{ $lead->phone }}
@@ -97,7 +97,7 @@
                         </td>
 
                         <td class="px-6 py-4 text-right space-x-3 font-semibold">
-                            <a href="{{ route('leads.show', $lead) }}" wire:navigate class="text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                            <a href="{{ route('leads.show', $lead) }}" wire:navigate class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">
                                 Ver
                             </a>
                             <a href="{{ route('leads.edit', $lead) }}" wire:navigate class="text-[#295384] dark:text-blue-400 hover:underline">

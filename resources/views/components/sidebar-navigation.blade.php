@@ -21,20 +21,16 @@
                 @endphp
                 <li>
                     <a href="{{ $item['route'] !== '#' ? route($item['route']) : '#' }}"
-                       class="group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors {{ $isCurrent ? 'bg-white dark:bg-white shadow-xs' : 'hover:bg-white dark:hover:bg-white' }}"
+                       class="group flex gap-x-3 rounded-lg p-2 text-sm leading-6 font-semibold transition-all duration-150 {{ $isCurrent ? 'bg-[#1F2937] text-white shadow-xs dark:bg-white dark:text-[#295384]' : 'text-gray-700 hover:bg-[#1F2937] hover:text-white hover:shadow-xs dark:text-white dark:hover:bg-white dark:hover:text-[#295384]' }}"
                        :title="sidebarCollapsed ? '{{ $item['name'] }}' : ''"
                     >
-                        {{-- Ícone: Força a cor escuro (slate-900) tanto no item ativo quanto no hover --}}
-                        <svg class="h-6 w-6 shrink-0 transition-colors {{ $isCurrent ? 'text-slate-900 dark:text-slate-900' : 'text-gray-400 dark:text-gray-300 group-hover:text-slate-900 dark:group-hover:text-slate-900' }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        {{-- Ícone --}}
+                        <svg class="h-6 w-6 shrink-0 transition-colors {{ $isCurrent ? 'text-white dark:text-[#295384]' : 'text-gray-500 group-hover:text-white dark:text-gray-300 dark:group-hover:text-[#295384]' }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
                         </svg>
 
-                        {{-- Texto: Força a cor escura (slate-900) diretamente no span tanto no ativo quanto no hover --}}
-                        <span x-show="!sidebarCollapsed" 
-                              x-transition:enter="transition ease-out duration-100" 
-                              class="truncate transition-colors {{ $isCurrent ? 'text-slate-900 dark:text-slate-900' : 'text-gray-200 dark:text-gray-200 group-hover:text-slate-900 dark:group-hover:text-slate-900' }}">
-                            {{ $item['name'] }}
-                        </span>
+                        {{-- Texto --}}
+                        <span x-show="!sidebarCollapsed" x-transition:enter="transition ease-out duration-100" class="truncate">{{ $item['name'] }}</span>
                     </a>
                 </li>
             @endforeach

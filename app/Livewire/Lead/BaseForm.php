@@ -96,7 +96,7 @@ class BaseForm
                 ]),
 
             Action::make('save')
-                ->label('Salvar Lead')
+                ->label('Cadastrar Cliente')
                 ->button()
                 ->action('save'),
         ];
