@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
-/* 🚀 IMPORTAÇÕES ESSENCIAIS DO FILAMENT (Caminho real das fontes CSS) */
+/* 🚀 Varredura de classes do Filament para o Tailwind v4 */
+@source "../../vendor/filament/**/*.blade.php";
+
+/* 🚀 IMPORTAÇÕES ESSENCIAIS DO FILAMENT */
 @import '../../vendor/filament/support/resources/css/index.css';
 @import '../../vendor/filament/forms/resources/css/index.css';
+@import '../../vendor/filament/tables/resources/css/index.css';
 @import '../../vendor/filament/actions/resources/css/index.css';
 @import '../../vendor/filament/schemas/resources/css/index.css';
 @import '../../vendor/filament/notifications/resources/css/index.css';
@@ -16,4 +20,27 @@
     /* Cores da identidade visual do Insurance Platform */
     --color-insurance-primary: #295384;
     --color-insurance-secondary: #B99B6C;
+}
+
+/* 🎯 COR DO BOTÃO PRIMÁRIO (Válido para Light e Dark) */
+.fi-btn-primary {
+    background-color: #295384 !important;
+    color: #ffffff !important;
+}
+.fi-btn-primary:hover {
+    background-color: #20426a !important;
+}
+
+/* 🎯 CORREÇÃO EXCLUSIVA PARA O DARK MODE (Não afeta o modo Light) */
+.dark .fi-ta-ctn,
+.dark .fi-section,
+.dark .fi-card,
+.dark .fi-ta-header,
+.dark .fi-ta-content {
+    background-color: #1F2937 !important;
+    border-color: #374151 !important;
+}
+
+.dark .fi-ta-row:hover {
+    background-color: rgba(55, 65, 81, 0.4) !important;
 }

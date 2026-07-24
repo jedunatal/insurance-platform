@@ -3,69 +3,99 @@
 namespace App\Livewire\Lead;
 
 use App\Enums\LeadStatusEnum;
-use App\Services\CRM\LeadService;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Livewire\Attributes\Computed;
+use App\Models\Lead;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Tables;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
-use Livewire\Attributes\Url;
 use Livewire\Component;
-use Livewire\WithPagination;
 
 #[Title('Clientes em Potencial')]
 #[Layout('layouts.app')]
-final class ListAll extends Component 
+final class ListAll extends Component implements HasActions, HasForms, HasTable
 {
-    use WithPagination;
+    use InteractsWithActions;
+    use InteractsWithForms;
+    use InteractsWithTable;
 
-    #[Url(as: 'q')]
-    public string $search = '';
-
-    #[Url(as: 'status')]
-    public string $statusFilter = '';
-
-    public function updatedSearch(): void
+    public function table(Table $table): Table
     {
-        $this->resetPage();
-    }
+        return $table
+            ->query(Lead::query()->with('product'))
+            ->headerActions([
+                CreateAction::make('create')
+                    ->label('Novo Cliente')
+                    ->url(route('leads.create'))
+                    ->icon('heroicon-o-plus')
+                    ->extraAttributes([
+                        'class' => '!bg-[#295384] hover:!bg-[#1c385a] !text-white [&_svg]:!text-white font-medium transition-colors shadow-xs',
+                    ]),
+            ])
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Cliente')
+                    ->searchable()
+                    ->sortable()
+                    ->description(fn(Lead $record): string => $record->product?->name ?? 'Ramo não informado'),
 
-    public function updatedStatusFilter(): void
-    {
-        $this->resetPage();
-    }
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Contato')
+                    ->searchable()
+                    ->description(fn(Lead $record): ?string => $record->phone),
 
-    #[Computed]
-    public function leads(): LengthAwarePaginator
-    {
-        $status = filled($this->statusFilter)
-            ? LeadStatusEnum::tryFrom($this->statusFilter)
-            : null;
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->sortable(),
 
-        return app(LeadService::class)->paginate(
-            search: filled($this->search) ? $this->search : null,
-            status: $status,
-        );
-    }
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Criado em')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make('view')
+                        ->label('Visualizar')
+                        ->icon('heroicon-o-eye')
+                        ->color('primary')
+                        ->url(fn(Lead $record): string => route('leads.view', $record)),
+                    EditAction::make('edit')
+                        ->label('Editar')
+                        ->url(fn(Lead $record): string => route('leads.edit', $record))
+                        ->icon('heroicon-o-pencil')
+                        ->color('secondary'),
 
-    #[Computed]
-    public function statuses(): array
-    {
-        return LeadStatusEnum::cases();
-    }
-
-    public function clearFilters(): void
-    {
-        $this->search = '';
-        $this->statusFilter = '';
-        $this->resetPage();
-    }
-
-    public function confirmDelete(int $id): void
-    {
-        $this->dispatch(
-            'confirm-delete',
-            id: $id
-        );
+                    DeleteAction::make('delete')
+                        ->label('Excluir')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->successNotificationTitle('Cliente excluído com sucesso!'),
+                ])
+                    ->label('Ações'),
+            ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('Filtrar por Status')
+                    ->options(
+                        collect(LeadStatusEnum::cases())->pluck('name', 'value')->toArray()
+                    ),
+            ])
+            ->emptyStateHeading('Nenhum cliente em potencial encontrado')
+            ->emptyStateDescription('Não encontramos registros correspondentes à pesquisa ou filtro selecionado.');
     }
 
     public function render(): \Illuminate\View\View

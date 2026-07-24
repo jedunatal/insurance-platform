@@ -6,75 +6,79 @@ use App\Models\Lead;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Concerns\InteractsWithInfolists;
-use Filament\Infolists\Contracts\HasInfolists;
-use Filament\Infolists\Infolist;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Schemas\Schema;
 use Illuminate\Contracts\View\View as ViewContract;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
-class View extends Component implements HasActions, HasInfolists
+#[Title('Visualizar Cliente')]
+#[Layout('layouts.app')]
+class View extends Component implements HasActions, HasSchemas
 {
     use InteractsWithActions;
-    use InteractsWithInfolists;
+    use InteractsWithSchemas;
 
     public Lead $record;
 
     public function mount(Lead $record): void
     {
+        $record->load('product');
+
         $this->record = $record;
-        $this->record->load(['product', 'assignedTo', 'createdBy']);
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->record($this->record)
             ->schema([
-                TextEntry::make('name')
-                    ->label('Nome do Cliente'),
+                Section::make('Informações do Cliente')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextEntry::make('name')
+                                    ->label('Nome do Cliente'),
 
-                TextEntry::make('email')
-                    ->label('E-mail')
-                    ->placeholder('Não informado'),
+                                TextEntry::make('email')
+                                    ->label('E-mail')
+                                    ->placeholder('Sem e-mail'),
 
-                TextEntry::make('phone')
-                    ->label('Telefone / WhatsApp')
-                    ->placeholder('Não informado'),
+                                TextEntry::make('phone')
+                                    ->label('Telefone / WhatsApp')
+                                    ->placeholder('Sem telefone'),
 
-                TextEntry::make('document')
-                    ->label('CPF / CNPJ')
-                    ->placeholder('Não informado'),
+                                TextEntry::make('document')
+                                    ->label('CPF / CNPJ')
+                                    ->placeholder('Não informado'),
 
-                TextEntry::make('product.name')
-                    ->label('Ramo / Produto de Interesse')
-                    ->placeholder('Não especificado'),
+                                TextEntry::make('product.name')
+                                    ->label('Ramo / Produto de Interesse')
+                                    ->placeholder('Ramo não informado'),
 
-                TextEntry::make('source')
-                    ->label('Origem')
-                    ->badge(),
+                                TextEntry::make('source')
+                                    ->label('Origem do Cliente'),
 
-                TextEntry::make('status')
-                    ->label('Status Atual')
-                    ->badge(),
+                                TextEntry::make('status')
+                                    ->label('Status')
+                                    ->badge(),
 
-                TextEntry::make('next_contact_at')
-                    ->label('Próximo Contato Agendado')
-                    ->dateTime('d/m/Y H:i')
-                    ->placeholder('Nenhum agendamento'),
+                                TextEntry::make('next_contact_at')
+                                    ->label('Próximo Contato')
+                                    ->dateTime('d/m/Y H:i')
+                                    ->placeholder('Sem agendamento'),
 
-                TextEntry::make('assignedTo.name')
-                    ->label('Corretor Responsável')
-                    ->placeholder('Não atribuído'),
-
-                TextEntry::make('created_at')
-                    ->label('Cadastrado em')
-                    ->dateTime('d/m/Y H:i'),
-
-                TextEntry::make('notes')
-                    ->label('Histórico / Observações')
-                    ->columnSpan(2)
-                    ->placeholder('Sem observações registradas.'),
-            ])->columns(2);
+                                TextEntry::make('notes')
+                                    ->label('Notas / Observações')
+                                    ->columnSpanFull()
+                                    ->placeholder('Nenhuma observação cadastrada'),
+                            ]),
+                    ]),
+            ]);
     }
 
     public function render(): ViewContract

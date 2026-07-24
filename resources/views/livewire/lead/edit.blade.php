@@ -7,7 +7,7 @@
         description="Atualize as informações e o histórico do cliente em potencial."
     >
         <x-slot:actions>
-            <a href="{{ route('leads.show', $record) }}" wire:navigate class="inline-flex items-center px-3.5 py-2 text-sm font-semibold text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-900 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors">
+            <a href="{{ route('leads.edit', $record) }}" wire:navigate class="inline-flex items-center px-3.5 py-2 text-sm font-semibold text-gray-700 dark:text-neutral-300 bg-gray-100 dark:bg-neutral-900 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-800 transition-colors">
                 Visualizar
             </a>
             <a href="{{ route('leads.index') }}" wire:navigate class="inline-flex items-center gap-x-2 text-sm font-semibold text-gray-600 dark:text-neutral-400 hover:text-gray-950 dark:hover:text-white transition-colors">

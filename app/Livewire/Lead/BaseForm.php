@@ -6,6 +6,7 @@ use App\Enums\LeadSourceEnum;
 use App\Enums\LeadStatusEnum;
 use App\Models\Lead;
 use App\Models\Product;
+use App\Models\Tenant;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Schemas\Components\Grid;
@@ -94,20 +95,28 @@ class BaseForm
                         ->columnSpanFull()
                         ->nullable(),
                 ]),
-
-            Action::make('save')
-                ->label('Cadastrar Cliente')
-                ->button()
-                ->action('save'),
         ];
     }
 
     public static function create(array $data): ?Lead
     {
         return DB::transaction(function () use ($data) {
-            $data['tenant_id'] = auth()->user()->tenant_id ?? 1;
+            
+            // GARANTIA: Se o Tenant #1 não existir no banco, ele é criado automaticamente aqui
+            $tenant = Tenant::firstOrCreate(
+                ['id' => 1],
+                [
+                    'name'     => 'Empresa Padrão',
+                    'slug'     => 'empresa-padrao',
+                    'email'    => 'contato@empresa.com',
+                    'document' => '00000000000191',
+                ]
+            );
+
+            $data['tenant_id']  = auth()->check() ? (auth()->user()->tenant_id ?? $tenant->id) : $tenant->id;
             $data['created_by'] = auth()->id();
 
+            // Grava fisicamente no banco MySQL
             return Lead::create($data);
         });
     }
