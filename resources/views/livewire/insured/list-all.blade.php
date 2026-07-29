@@ -3,6 +3,7 @@
         badge="Clientes Efetivados"
         title="Segurados"
         description="Gestão da carteira de clientes ativos e cadastros gerais da corretora."
+        icon="heroicon-o-user"
     />
 </x-slot:header>
 
