@@ -1,39 +1,41 @@
-<ul role="list" class="flex flex-1 flex-col gap-y-7">
-    <li>
-        <ul role="list" class="-mx-2 space-y-1">
-            @php
-                $navItems = [
-                    ['name' => 'Inicio', 'route' => 'home', 'icon' => 'M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25'],
-                    ['name' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z'],
-                    ['name' => 'Clientes em potencial', 'route' => 'leads.index', 'icon' => 'M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z'],
-                    ['name' => 'Segurados', 'route' => 'insureds.index', 'icon' => 'M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z'],
-                    ['name' => 'Apólices', 'route' => '#', 'icon' => 'm18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13'],
-                    ['name' => 'Sinistros', 'route' => '#', 'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z'],
-                    ['name' => 'Financeiro', 'route' => '#', 'icon' => 'M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z'],
-                    ['name' => 'Relatórios', 'route' => '#', 'icon' => 'M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25'],
-                    ['name' => 'Configurações', 'route' => '#', 'icon' => 'M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z']
-                ];
-            @endphp
+<ul role="list" class="flex flex-1 flex-col gap-y-1.5">
+    @php
+        $navItems = [
+            ['name' => 'Inicio', 'route' => 'home', 'icon' => 'M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25'],
+            ['name' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z'],
+            ['name' => 'Clientes em potencial', 'route' => 'leads.index', 'icon' => 'M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z'],
+            ['name' => 'Segurados', 'route' => 'insureds.index', 'icon' => 'M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z'],
+            ['name' => 'Apólices', 'route' => '#', 'icon' => 'm18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13'],
+            ['name' => 'Sinistros', 'route' => '#', 'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z'],
+            ['name' => 'Financeiro', 'route' => '#', 'icon' => 'M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z'],
+            ['name' => 'Relatórios', 'route' => '#', 'icon' => 'M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25'],
+            ['name' => 'Configurações', 'route' => '#', 'icon' => 'M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z']
+        ];
+    @endphp
 
-            @foreach($navItems as $item)
-                @php 
-                    $isCurrent = $item['route'] !== '#' && (request()->routeIs($item['route']) || request()->routeIs(explode('.', $item['route'])[0] . '.*')); 
-                @endphp
-                <li>
-                    <a href="{{ $item['route'] !== '#' ? route($item['route']) : '#' }}"
-                       class="group flex gap-x-3 rounded-lg p-2 text-sm leading-6 font-semibold transition-all duration-150 {{ $isCurrent ? 'bg-[#1F2937] text-white shadow-xs dark:bg-white dark:text-[#295384]' : 'text-gray-700 hover:bg-[#1F2937] hover:text-white hover:shadow-xs dark:text-white dark:hover:bg-white dark:hover:text-[#295384]' }}"
-                       :title="sidebarCollapsed ? '{{ $item['name'] }}' : ''"
-                    >
-                        {{-- Ícone --}}
-                        <svg class="h-6 w-6 shrink-0 transition-colors {{ $isCurrent ? 'text-white dark:text-[#295384]' : 'text-gray-500 group-hover:text-white dark:text-gray-300 dark:group-hover:text-[#295384]' }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
-                        </svg>
+    @foreach($navItems as $item)
+        @php 
+            $isCurrent = $item['route'] !== '#' && (request()->routeIs($item['route']) || request()->routeIs(explode('.', $item['route'])[0] . '.*')); 
+        @endphp
+        <li>
+            <a href="{{ $item['route'] !== '#' ? route($item['route']) : '#' }}"
+               class="group relative flex items-center gap-x-3 rounded-2xl px-3 py-2.5 text-xs font-semibold transition-all duration-200 
+                      {{ $isCurrent 
+                         ? 'bg-[#295384] text-white shadow-md border border-blue-600/20 dark:bg-[#295384] dark:text-white dark:shadow-blue-900/30 dark:border-blue-400/20' 
+                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800/50' }}"
+               :title="sidebarCollapsed ? '{{ $item['name'] }}' : ''"
+            >
+                <svg class="h-5 w-5 shrink-0 transition-transform group-hover:scale-110 {{ $isCurrent ? 'text-white' : 'text-slate-500 group-hover:text-slate-800 dark:text-slate-400 dark:group-hover:text-slate-200' }}" 
+                     fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
+                </svg>
 
-                        {{-- Texto --}}
-                        <span x-show="!sidebarCollapsed" x-transition:enter="transition ease-out duration-100" class="truncate">{{ $item['name'] }}</span>
-                    </a>
-                </li>
-            @endforeach
-        </ul>
-    </li>
+                <span x-show="!sidebarCollapsed" class="truncate tracking-wide">{{ $item['name'] }}</span>
+
+                @if($isCurrent)
+                    <span x-show="!sidebarCollapsed" class="ml-auto w-1.5 h-1.5 rounded-full bg-white dark:bg-[#B99B6C] animate-pulse shrink-0"></span>
+                @endif
+            </a>
+        </li>
+    @endforeach
 </ul>

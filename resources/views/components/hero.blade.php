@@ -4,28 +4,29 @@
     'badge' => null,
 ])
 
-<div {{ $attributes->merge(['class' => 'relative overflow-hidden rounded-2xl bg-white dark:bg-[#1F2937] border border-gray-200 dark:border-gray-700/70 p-6 sm:p-8 shadow-xs transition-colors']) }}>
-    <div class="relative z-10 max-w-2xl">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800/80 mb-2">
+    <div class="space-y-1">
         @if($badge)
-            <span class="inline-flex items-center rounded-md bg-[#295384]/10 dark:bg-white/10 px-2.5 py-1 text-xs font-bold tracking-wider uppercase text-[#295384] dark:text-[#B99B6C] backdrop-blur-md mb-3 border border-[#295384]/20 dark:border-white/10">
+            <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-50 dark:bg-[#295384]/20 border border-blue-200 dark:border-[#295384]/40 text-[#295384] dark:text-[#B99B6C] text-[10px] font-bold uppercase tracking-wider">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#295384] dark:bg-[#B99B6C]"></span>
                 {{ $badge }}
-            </span>
+            </div>
         @endif
 
-        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             {{ $title }}
-        </h2>
+        </h1>
 
         @if($description)
-            <p class="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
+            <p class="text-xs text-slate-600 dark:text-slate-400 font-normal leading-relaxed max-w-2xl">
                 {{ $description }}
             </p>
         @endif
-
-        @if($slot->isNotEmpty())
-            <div class="mt-6 flex flex-wrap items-center gap-4">
-                {{ $slot }}
-            </div>
-        @endif
     </div>
+
+    @if($slot->isNotEmpty())
+        <div class="flex items-center gap-3 shrink-0">
+            {{ $slot }}
+        </div>
+    @endif
 </div>

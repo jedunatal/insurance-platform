@@ -3,7 +3,7 @@
 /* 🚀 Varredura de classes do Filament para o Tailwind v4 */
 @source "../../vendor/filament/**/*.blade.php";
 
-/* 🚀 IMPORTAÇÕES ESSENCIAIS DO FILAMENT */
+/* 🚀 Importações essenciais do Filament */
 @import '../../vendor/filament/support/resources/css/index.css';
 @import '../../vendor/filament/forms/resources/css/index.css';
 @import '../../vendor/filament/tables/resources/css/index.css';
@@ -14,33 +14,57 @@
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-
-    /* Cores da identidade visual do Insurance Platform */
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
     --color-insurance-primary: #295384;
     --color-insurance-secondary: #B99B6C;
 }
 
-/* 🎯 COR DO BOTÃO PRIMÁRIO (Válido para Light e Dark) */
+/* 🎯 Botão Primário (Mesmo padrão para Light e Dark) */
 .fi-btn-primary {
     background-color: #295384 !important;
     color: #ffffff !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 4px 12px rgba(41, 83, 132, 0.2) !important;
+    transition: all 0.2s ease !important;
 }
 .fi-btn-primary:hover {
-    background-color: #20426a !important;
+    background-color: #1f3f64 !important;
 }
 
-/* 🎯 CORREÇÃO EXCLUSIVA PARA O DARK MODE (Não afeta o modo Light) */
+/* 🎯 Ajustes de Geometria nos componentes do Filament */
+.fi-ta-ctn,
+.fi-section,
+.fi-card {
+    border-radius: 1rem !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease !important;
+}
+
+.fi-input-wrp {
+    border-radius: 0.75rem !important;
+}
+
+/* 🎯 Regras para o Dark Mode do Filament */
 .dark .fi-ta-ctn,
 .dark .fi-section,
-.dark .fi-card,
-.dark .fi-ta-header,
-.dark .fi-ta-content {
-    background-color: #1F2937 !important;
-    border-color: #374151 !important;
+.dark .fi-card {
+    background-color: rgba(15, 23, 42, 0.7) !important;
+    border-color: rgba(51, 65, 85, 0.6) !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+.dark .fi-ta-header-ctn {
+    background-color: transparent !important;
+    border-bottom-color: rgba(51, 65, 85, 0.5) !important;
 }
 
 .dark .fi-ta-row:hover {
-    background-color: rgba(55, 65, 81, 0.4) !important;
+    background-color: rgba(30, 41, 59, 0.5) !important;
+}
+
+.dark .fi-input-wrp {
+    background-color: rgba(2, 6, 23, 0.6) !important;
+    border-color: rgba(51, 65, 85, 0.8) !important;
+}
+.dark .fi-input-wrp:focus-within {
+    border-color: #295384 !important;
 }
