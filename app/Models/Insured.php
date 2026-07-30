@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PersonTypeEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,13 @@ class Insured extends Model
         'state',
         'notes',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'person_type' => PersonTypeEnum::class,
+        ];
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -75,6 +83,21 @@ class Insured extends Model
         return $query->where('assigned_to', $userId);
     }
 
+    public function scopeByPersonType(Builder $query, PersonTypeEnum $personType): Builder
+    {
+        return $query->where('person_type', $personType->value);
+    }
+
+    public function scopeByCity(Builder $query, string $city): Builder
+    {
+        return $query->where('city', 'like', "%{$city}%");
+    }
+
+    public function scopeByState(Builder $query, string $state): Builder
+    {
+        return $query->where('state', strtoupper($state));
+    }
+
     public function scopeSearch(Builder $query, string $term): Builder
     {
         $term = "%{$term}%";
@@ -88,5 +111,26 @@ class Insured extends Model
                     ->orWhere('document', 'like', $term);
             }
         );
+    }
+
+    public function scopeCreatedToday(Builder $query): Builder
+    {
+        return $query->whereDate('created_at', today());
+    }
+
+    /**
+     * Formata o documento de acordo com o tipo de pessoa.
+     */
+    public function formattedDocument(): ?string
+    {
+        if (! $this->document) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D/', '', $this->document);
+
+        return $this->person_type === PersonTypeEnum::Legal
+            ? preg_replace('/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/', '$1.$2.$3/$4-$5', $digits)
+            : preg_replace('/^(\d{3})(\d{3})(\d{3})(\d{2})$/', '$1.$2.$3-$4', $digits);
     }
 }

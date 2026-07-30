@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'prefix' => 'leads',
     'as'     => 'leads.',
-   // 'middleware' => ['auth'],
+    // 'middleware' => ['auth'],
 ], function () {
 
     Route::get('/', ListAll::class)->name('index');

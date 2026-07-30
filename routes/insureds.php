@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'prefix' => 'insureds',
     'as'     => 'insureds.',
+   // 'middleware' => ['auth'],
 ], function () {
     Route::get('/', ListAll::class)->name('index');
     Route::get('/novo', Create::class)->name('create');
