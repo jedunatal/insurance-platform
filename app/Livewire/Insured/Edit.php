@@ -3,47 +3,75 @@
 namespace App\Livewire\Insured;
 
 use App\Models\Insured;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
+use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Schemas\Schema;
+use Filament\Notifications\Notification;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Title('Editar Segurado')]
-#[Layout('layouts.app')]
-class Edit extends Component implements HasForms
+class Edit extends Component implements HasActions, HasSchemas
 {
-    use InteractsWithForms;
+    use InteractsWithActions;
+    use InteractsWithSchemas;
 
     public Insured $record;
+
     public ?array $data = [];
 
     public function mount(Insured $record): void
     {
         $this->record = $record;
-        $this->form->fill($this->record->toArray());
+
+        $this->form->fill(
+            $this->record->only([
+                'name',
+                'email',
+                'phone',
+                'document',
+                'person_type',
+                'zip_code',
+                'address',
+                'number',
+                'complement',
+                'neighborhood',
+                'city',
+                'state',
+                'notes',
+            ])
+        );
     }
 
-    public function form(Form $form): Form
+
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema(BaseForm::schema())
+        return $schema
+            ->schema(BaseForm::getFields())
             ->statePath('data');
     }
+
 
     public function save(): void
     {
         $data = $this->form->getState();
-        $this->record->update($data);
+    DB::transaction(function () use ($data) {
+            $this->record->update($data);
 
-        \Filament\Notifications\Notification::make()
-            ->title('Segurado atualizado com sucesso!')
-            ->success()
-            ->send();
+            Notification::make()
+                ->title('Segurado atualizado com sucesso!')
+                ->success()
+                ->send();
 
-        $this->redirect(route('insureds.index'), navigate: true);
+            $this->redirect(
+                route('insureds.index'),
+                navigate: true
+            );
+        });
     }
+
 
     public function render()
     {

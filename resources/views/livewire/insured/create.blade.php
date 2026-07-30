@@ -1,20 +1,31 @@
-<x-slot:header>
-    <x-hero
-        badge="Novo Cadastro"
-        title="Cadastrar Segurado"
-        description="Preencha os dados cadastrais e o endereço completo do cliente."
-    />
-</x-slot:header>
+<div class="flex flex-col gap-y-6 w-full max-w-5xl mx-auto px-4 sm:px-6 py-2">
 
-<form wire:submit="create" class="mt-4 space-y-6">
-    {{ $this->form }}
+    {{-- Cabeçalho da Página --}}
+    <x-page-header 
+        category="Segurados" 
+        title="Novo segurado" 
+        description="Cadastre um novo segurado."
+    >
+        <x-slot:actions>
+            <a href="{{ route('insureds.index') }}" wire:navigate class="inline-flex items-center gap-x-2 text-sm font-semibold text-gray-600 dark:text-neutral-400 hover:text-gray-950 dark:hover:text-white transition-colors">
+                ← Voltar para Lista
+            </a>
+        </x-slot:actions>
+    </x-page-header>
 
-    <div class="flex items-center gap-x-3">
-        <button type="submit" class="px-5 py-2.5 bg-[#295384] hover:bg-[#1c385a] text-white font-semibold rounded-lg text-sm transition-colors shadow-xs">
-            Salvar Segurado
-        </button>
-        <a href="{{ route('insureds.index') }}" wire:navigate class="px-5 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold rounded-lg text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-            Cancelar
-        </a>
-    </div>
-</form>
+    {{-- Formulário com Card e Rodapé de Ações --}}
+    <form wire:submit="save">
+        <x-card class="p-6 dark:!bg-[#1F2937] dark:!border-gray-700">
+            {{ $this->form }}
+
+            <x-slot:footer>
+                <x-form-actions 
+                    :cancel-url="route('insureds.index')" 
+                    submit-text="Cadastrar Segurado" 
+                />
+            </x-slot:footer>
+        </x-card>
+    </form>
+
+    <x-filament-actions::modals />
+</div>

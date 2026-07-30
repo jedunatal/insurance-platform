@@ -3,47 +3,46 @@
 namespace App\Livewire\Insured;
 
 use App\Models\Insured;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Schema;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Title('Novo Segurado')]
-#[Layout('layouts.app')]
-class Create extends Component implements HasForms
+class Create extends Component implements HasActions, HasSchemas
 {
-    use InteractsWithForms;
+    use InteractsWithActions;
+    use InteractsWithSchemas;
 
     public ?array $data = [];
 
     public function mount(): void
     {
-        $this->form->fill();
+        $this->form->fill([
+            'source' => 'manual',
+            'status' => 'novo',
+        ]);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema(BaseForm::schema())
-            ->statePath('data');
+        return $schema
+            ->schema(BaseForm::getFields())
+            ->statePath('data')
+            ->model(Insured::class);
     }
 
-    public function create(): void
+    public function save(): void
     {
         $data = $this->form->getState();
-        $data['tenant_id'] = auth()->user()->tenant_id ?? null;
-        $data['created_by'] = auth()->id();
-
-        Insured::create($data);
-
-        \Filament\Notifications\Notification::make()
-            ->title('Segurado cadastrado com sucesso!')
-            ->success()
-            ->send();
-
-        $this->redirect(route('insureds.index'), navigate: true);
+        
+        $record = BaseForm::create($data);
+        
+        $this->redirectRoute('insureds.index');
     }
 
     public function render()

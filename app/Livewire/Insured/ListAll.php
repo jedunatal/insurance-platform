@@ -21,8 +21,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Title('Segurados')]
-#[Layout('layouts.app')]
 final class ListAll extends Component implements HasActions, HasForms, HasTable
 {
     use InteractsWithActions;
