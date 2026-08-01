@@ -8,12 +8,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+    use HasRoles;
     use Notifiable;
+
+    protected $with = [];
+
+    /**
+     * Auto-purge de caches do Spatie Permission ao recarregar o usuário.
+     */
+    protected static function booted(): void
+    {
+        //
+    }
 
     protected $fillable = [
         'tenant_id',
