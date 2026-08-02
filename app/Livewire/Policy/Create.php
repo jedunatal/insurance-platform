@@ -3,8 +3,6 @@
 namespace App\Livewire\Policy;
 
 use App\Models\Policy;
-use App\DTOs\PolicyData;
-use App\Services\Insurance\PolicyService;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -47,32 +45,11 @@ class Create extends Component implements HasForms, HasActions
             ->model(Policy::class);
     }
 
-    public function save(PolicyService $service)
+    public function save()
     {
         $formData = $this->form->getState();
 
-        /*
-        |--------------------------------------------------------------------------
-        | TEMPORÁRIO
-        |--------------------------------------------------------------------------
-        | Como ainda não existe usuário autenticado, não é possível definir
-        | automaticamente o tenant e o usuário criador da apólice.
-        |
-        | Código original:
-        |
-        | $formData['tenant_id'] = auth()->user()->tenant_id;
-        | $formData['created_by'] = auth()->id();
-        |
-        | Quando implementar autenticação, volte para o código acima.
-        |--------------------------------------------------------------------------
-        */
-
-        $formData['tenant_id'] = null;
-        $formData['created_by'] = null;
-
-        $dto = PolicyData::fromArray($formData);
-
-        $service->create($dto);
+        BaseForm::create($formData);
 
         session()->flash('success', 'Apólice cadastrada com sucesso!');
 

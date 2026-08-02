@@ -25,7 +25,21 @@ class View extends Component implements HasActions, HasSchemas
 
     public function mount(Policy $record): void
     {
-        abort_unless(auth()->user()->checkPermissionTo('view policies') && auth()->user()->tenant_id === $record->tenant_id, 403);
+        /*
+        |--------------------------------------------------------------------------
+        | TEMPORÁRIO
+        |--------------------------------------------------------------------------
+        | O projeto ainda não possui autenticação.
+        | Quando o login estiver implementado, descomente as linhas abaixo.
+        |
+        | abort_unless(
+        |     auth()->user()->checkPermissionTo('view policies')
+        |     && auth()->user()->tenant_id === $record->tenant_id,
+        |     403
+        | );
+        |
+        */
+
         $this->record = $record->load(['insured', 'product', 'broker']);
     }
 

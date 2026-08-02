@@ -128,7 +128,7 @@ class ListAll extends Component implements HasTable, HasActions, HasForms
                         collect(PolicyStatusEnum::cases())->pluck('name', 'value')->toArray()
                     ),
             ])
-            ->emptyStateHeading('Nenhum cliente em potencial encontrado')
+            ->emptyStateHeading('Nenhuma apólice encontrada')
             ->emptyStateDescription('Não encontramos registros correspondentes à pesquisa ou filtro selecionado.');
 
     }

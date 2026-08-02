@@ -9,7 +9,7 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -26,26 +26,43 @@ class Edit extends Component implements HasForms, HasActions
 
     public function mount(Policy $record): void
     {
-        abort_unless(auth()->user()->checkPermissionTo('update policies') && auth()->user()->tenant_id === $record->tenant_id, 403);
-        
+        /*
+        |--------------------------------------------------------------------------
+        | TEMPORÁRIO
+        |--------------------------------------------------------------------------
+        | O projeto ainda não possui autenticação.
+        | Quando o login estiver implementado, descomente as linhas abaixo.
+        |
+        | abort_unless(
+        |     auth()->user()->checkPermissionTo('update policies')
+        |     && auth()->user()->tenant_id === $record->tenant_id,
+        |     403
+        | );
+        |
+        */
+
         $this->record = $record;
         $this->form->fill($record->toArray());
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return BaseForm::configure($form)
-            ->statePath('data');
+        return $schema
+            ->components(BaseForm::getFields())
+            ->statePath('data')
+            ->model($this->record);
     }
 
     public function save(PolicyService $service)
     {
         $formData = $this->form->getState();
+
         $dto = PolicyData::fromArray(array_merge($this->record->toArray(), $formData));
 
         $service->update($this->record, $dto);
 
         session()->flash('success', 'Apólice atualizada com sucesso!');
+
         return redirect()->route('policies.index');
     }
 

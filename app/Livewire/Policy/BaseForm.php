@@ -5,9 +5,7 @@ namespace App\Livewire\Policy;
 use App\DTOs\PolicyData;
 use App\Enums\PolicyPaymentMethodEnum;
 use App\Enums\PolicyStatusEnum;
-use App\Models\Insured;
 use App\Models\Policy;
-use App\Models\Product;
 use App\Services\Insurance\PolicyService;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -30,14 +28,21 @@ class BaseForm
                 ->schema([
                     Select::make('insured_id')
                         ->label('Segurado')
-                        ->options(fn () => Insured::query()->pluck('name', 'id'))
+                        ->options(fn () => app(PolicyService::class)->insuredOptions($this->resolveTenantId()))
                         ->searchable()
                         ->preload()
                         ->required(),
 
                     Select::make('product_id')
                         ->label('Produto / Ramo')
-                        ->options(fn () => Product::query()->pluck('name', 'id'))
+                        ->options(fn () => app(PolicyService::class)->productOptions($this->resolveTenantId()))
+                        ->searchable()
+                        ->preload()
+                        ->nullable(),
+
+                    Select::make('broker_id')
+                        ->label('Corretor Responsável')
+                        ->options(fn () => app(PolicyService::class)->brokerOptions($this->resolveTenantId()))
                         ->searchable()
                         ->preload()
                         ->nullable(),
@@ -60,11 +65,7 @@ class BaseForm
 
                     Select::make('status')
                         ->label('Status')
-                        ->options(
-                            collect(PolicyStatusEnum::cases())
-                                ->pluck('name', 'value')
-                                ->toArray()
-                        )
+                        ->options(PolicyStatusEnum::options())
                         ->default(PolicyStatusEnum::Active->value)
                         ->required(),
 
@@ -100,11 +101,7 @@ class BaseForm
 
                     Select::make('payment_method')
                         ->label('Forma de Pagamento')
-                        ->options(
-                            collect(PolicyPaymentMethodEnum::cases())
-                                ->pluck('name', 'value')
-                                ->toArray()
-                        )
+                        ->options(PolicyPaymentMethodEnum::options())
                         ->required(),
 
                     TextInput::make('installments_count')
@@ -145,5 +142,19 @@ class BaseForm
 
             return app(PolicyService::class)->create($dto);
         });
+    }
+
+    /**
+     * Resolve o tenant do usuário autenticado para alimentar os selects.
+     *
+     * Retorna 0 (zero) quando não há usuário autenticado, situação temporária
+     * do projeto sem login — mantém os selects funcionando e exibindo
+     * todas as opções via fallback do service.
+     */
+    private function resolveTenantId(): int
+    {
+        $tenantId = auth()->user()?->tenant_id;
+
+        return $tenantId !== null ? (int) $tenantId : 0;
     }
 }
