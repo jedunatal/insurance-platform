@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
             Route::middleware('web')
                 ->group(base_path('routes/policies.php'));
+            
+            Route::middleware('web')
+                ->group(base_path('routes/claims.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
