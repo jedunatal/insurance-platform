@@ -3,22 +3,28 @@
 namespace App\Livewire\Claim;
 
 use App\Models\Claim;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Title('Sinistros')]
-#[Layout('layouts.app')]
-class ListAll extends Component implements HasTable, HasActions
+final class ListAll extends Component implements HasActions, HasForms, HasTable
 {
     use InteractsWithTable;
     use InteractsWithActions;
+    use InteractsWithForms;
 
     public function table(Table $table): Table
     {
@@ -53,16 +59,27 @@ class ListAll extends Component implements HasTable, HasActions
                     ->money('BRL')
                     ->sortable(),
             ])
-            ->actions([
-                \Filament\Tables\Actions\Action::make('view')
-                    ->label('Ver')
-                    ->url(fn (Claim $record): string => route('claims.view', $record))
-                    ->icon('heroicon-m-eye'),
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make('view')
+                        ->label('Visualizar')
+                        ->icon('heroicon-o-eye')
+                        ->color('primary')
+                        ->url(fn(Claim $record): string => route('claims.view', $record)),
 
-                \Filament\Tables\Actions\Action::make('edit')
-                    ->label('Editar')
-                    ->url(fn (Claim $record): string => route('claims.edit', $record))
-                    ->icon('heroicon-m-pencil-square'),
+                    EditAction::make('edit')
+                        ->label('Editar')
+                        ->url(fn(Claim $record): string => route('claims.edit', $record))
+                        ->icon('heroicon-o-pencil')
+                        ->color('secondary'),
+
+                    DeleteAction::make('delete')
+                        ->label('Excluir')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->successNotificationTitle('Segurado excluído com sucesso!'),
+                ])
+                    ->label('Ações'),
             ]);
     }
 
