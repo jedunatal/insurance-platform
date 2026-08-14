@@ -1,12 +1,24 @@
-<div>
-    <x-hero title="Detalhes do Sinistro" subtitle="Ficha técnica e andamento da ocorrência." />
+<div class="flex flex-col gap-y-6 w-full max-w-5xl mx-auto px-4 sm:px-6 py-2">
 
-    <div class="mt-6 bg-white dark:bg-gray-900 shadow-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
+    <x-page-header
+        category="Ficha de Sinistro"
+        :title="$record->claim_number"
+        description="Ficha técnica e andamento da ocorrência."
+    >
+        <x-slot:actions>
+            <a href="{{ route('claims.edit', $record) }}" wire:navigate class="inline-flex items-center px-3.5 py-2 text-sm font-semibold text-white bg-[#295384] rounded-lg hover:bg-[#1f3f64] transition-colors">
+                Editar Sinistro
+            </a>
+            <a href="{{ route('claims.index') }}" wire:navigate class="inline-flex items-center gap-x-2 text-sm font-semibold text-gray-600 dark:text-neutral-400 hover:text-gray-950 dark:hover:text-white transition-colors">
+                ← Voltar
+            </a>
+        </x-slot:actions>
+    </x-page-header>
+
+    <x-card class="p-6 dark:!bg-[#1F2937] dark:!border-gray-700">
         {{ $this->infolist }}
+    </x-card>
 
-        <div class="mt-6 flex justify-end gap-3">
-            <a href="{{ route('claims.index') }}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium">Voltar</a>
-            <a href="{{ route('claims.edit', $record) }}" class="px-4 py-2 bg-[#295384] text-white text-sm font-medium rounded-xl hover:bg-[#1f3f66] transition">Editar Sinistro</a>
-        </div>
-    </div>
+    <x-filament-actions::modals />
+
 </div>
