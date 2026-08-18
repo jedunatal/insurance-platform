@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PolicyPaymentMethodEnum;
 use App\Enums\PolicyStatusEnum;
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +16,7 @@ class Policy extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use BelongsToTenant;
 
     protected $fillable = [
         'tenant_id',

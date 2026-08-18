@@ -6,6 +6,7 @@ namespace App\Models;
 // Importação dos Enums utilizados para tipar a Origem (source) e o Status do Lead no sistema
 use App\Enums\LeadSourceEnum;
 use App\Enums\LeadStatusEnum;
+use App\Models\Traits\BelongsToTenant;
 
 // Importação das classes base do Eloquent para manipulação de consultas no banco de dados
 use Illuminate\Database\Eloquent\Builder;
@@ -19,6 +20,8 @@ class Lead extends Model
 {
     // Trait para permitir o uso de Factories na geração de dados de teste e Seeders
     use HasFactory;
+
+    use BelongsToTenant; // Trait para associar o Lead a um Tenant (Corretora/Empresa) específica
 
     // Trait para exclusão lógica (não apaga o registro fisicamente do banco, apenas preenche a coluna deleted_at)
     use SoftDeletes;
