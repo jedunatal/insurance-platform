@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Models\Claim;
 use App\Models\User;
 
-class ClaimPolicy
+final class ClaimPolicy
 {
     public function viewAny(User $user): bool
     {
@@ -14,7 +14,8 @@ class ClaimPolicy
 
     public function view(User $user, Claim $claim): bool
     {
-        return $user->checkPermissionTo('view claims') && $user->tenant_id === $claim->tenant_id;
+        return $user->checkPermissionTo('view claims')
+            && $this->belongsToSameTenant($user, $claim);
     }
 
     public function create(User $user): bool
@@ -24,11 +25,30 @@ class ClaimPolicy
 
     public function update(User $user, Claim $claim): bool
     {
-        return $user->checkPermissionTo('update claims') && $user->tenant_id === $claim->tenant_id;
+        return $user->checkPermissionTo('update claims')
+            && $this->belongsToSameTenant($user, $claim);
     }
 
     public function delete(User $user, Claim $claim): bool
     {
-        return $user->checkPermissionTo('delete claims') && $user->tenant_id === $claim->tenant_id;
+        return $user->checkPermissionTo('delete claims')
+            && $this->belongsToSameTenant($user, $claim);
+    }
+
+    public function restore(User $user, Claim $claim): bool
+    {
+        return $user->checkPermissionTo('delete claims')
+            && $this->belongsToSameTenant($user, $claim);
+    }
+
+    public function forceDelete(User $user, Claim $claim): bool
+    {
+        return $user->checkPermissionTo('delete claims')
+            && $this->belongsToSameTenant($user, $claim);
+    }
+
+    private function belongsToSameTenant(User $user, Claim $claim): bool
+    {
+        return $user->tenant_id === $claim->tenant_id;
     }
 }

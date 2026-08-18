@@ -75,10 +75,8 @@ class BaseForm
 
                     Select::make('status')
                         ->label('Status Inicial')
-                        ->options(
-                            collect(LeadStatusEnum::cases())->pluck('name', 'value')->toArray()
-                        )
-                        ->default('novo')
+                        ->options(LeadStatusEnum::options())
+                        ->default(LeadStatusEnum::New->value)
                         ->required(),
 
                     DateTimePicker::make('next_contact_at')

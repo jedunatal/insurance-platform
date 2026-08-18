@@ -7,59 +7,48 @@ use App\Models\User;
 
 final class LeadPolicy
 {
-    /**
-     * Pode visualizar a listagem.
-     */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->checkPermissionTo('view leads');
     }
 
-    /**
-     * Pode visualizar um Lead.
-     */
     public function view(User $user, Lead $lead): bool
     {
-        return true;
+        return $user->checkPermissionTo('view leads')
+            && $this->belongsToSameTenant($user, $lead);
     }
 
-    /**
-     * Pode criar.
-     */
     public function create(User $user): bool
     {
-        return true;
+        return $user->checkPermissionTo('create leads');
     }
 
-    /**
-     * Pode atualizar.
-     */
     public function update(User $user, Lead $lead): bool
     {
-        return true;
+        return $user->checkPermissionTo('update leads')
+            && $this->belongsToSameTenant($user, $lead);
     }
 
-    /**
-     * Soft Delete.
-     */
     public function delete(User $user, Lead $lead): bool
     {
-        return true;
+        return $user->checkPermissionTo('delete leads')
+            && $this->belongsToSameTenant($user, $lead);
     }
 
-    /**
-     * Restaurar.
-     */
     public function restore(User $user, Lead $lead): bool
     {
-        return true;
+        return $user->checkPermissionTo('delete leads')
+            && $this->belongsToSameTenant($user, $lead);
     }
 
-    /**
-     * Exclusão definitiva.
-     */
     public function forceDelete(User $user, Lead $lead): bool
     {
-        return false;
+        return $user->checkPermissionTo('delete leads')
+            && $this->belongsToSameTenant($user, $lead);
+    }
+
+    private function belongsToSameTenant(User $user, Lead $lead): bool
+    {
+        return $user->tenant_id === $lead->tenant_id;
     }
 }

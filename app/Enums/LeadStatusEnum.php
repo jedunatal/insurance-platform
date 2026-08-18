@@ -2,7 +2,10 @@
 
 namespace App\Enums;
 
-enum LeadStatusEnum: string
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
+
+enum LeadStatusEnum: string implements HasLabel, HasColor
 {
     case New = 'Novo';
     case Contact = 'Contato';
@@ -10,7 +13,7 @@ enum LeadStatusEnum: string
     case Converted = 'Convertido';
     case Lost = 'Perdido';
 
-    public function label(): string
+    public function getLabel(): ?string
     {
         return match ($this) {
             self::New => 'Novo',
@@ -19,6 +22,25 @@ enum LeadStatusEnum: string
             self::Converted => 'Convertido',
             self::Lost => 'Perdido',
         };
+    }
+
+    public function getColor(): string|array|null
+    {
+        return match ($this) {
+            self::New => 'info',
+            self::Contact => 'warning',
+            self::Proposal => 'purple',
+            self::Converted => 'success',
+            self::Lost => 'danger',
+        };
+    }
+
+    /**
+     * Mantido para compatibilidade com chamadas legadas do projeto
+     */
+    public function label(): string
+    {
+        return $this->getLabel() ?? $this->value;
     }
 
     public function badgeClasses(): string
@@ -60,7 +82,7 @@ enum LeadStatusEnum: string
             array_map(
                 fn (self $case) => [
                     'value' => $case->value,
-                    'label' => $case->label(),
+                    'label' => $case->getLabel(),
                 ],
                 self::cases()
             ),
