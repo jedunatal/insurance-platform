@@ -4,6 +4,7 @@ namespace App\Livewire\Lead;
 
 use App\Enums\LeadStatusEnum;
 use App\Models\Lead;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
@@ -68,6 +69,12 @@ final class ListAll extends Component implements HasActions, HasForms, HasTable
             ])
             ->recordActions([
                 ActionGroup::make([
+                    Action::make('convert')
+                        ->label('Converter em Segurado')
+                        ->icon('heroicon-o-user-plus')
+                        ->color('success')
+                        ->url(fn (Lead $record): string => route('insureds.create', ['lead_id' => $record->id]))
+                        ->visible(fn (Lead $record): bool => ! in_array($record->status, [LeadStatusEnum::Converted, 'Convertido'], true)),
                     ViewAction::make('view')
                         ->label('Visualizar')
                         ->icon('heroicon-o-eye')
@@ -78,7 +85,6 @@ final class ListAll extends Component implements HasActions, HasForms, HasTable
                         ->url(fn(Lead $record): string => route('leads.edit', $record))
                         ->icon('heroicon-o-pencil')
                         ->color('secondary'),
-
                     DeleteAction::make('delete')
                         ->label('Excluir')
                         ->icon('heroicon-o-trash')
