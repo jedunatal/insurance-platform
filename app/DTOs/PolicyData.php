@@ -21,16 +21,18 @@ final readonly class PolicyData
      */
     public function __construct(
         public int $tenantId,
-        public int $createdBy,
+        public ?int $createdBy = null,
         public ?int $insuredId = null,
         public ?int $productId = null,
         public ?int $brokerId = null,
         public ?string $policyNumber = null,
         public ?string $proposalNumber = null,
+        public ?string $insurer = null,
+        public ?string $branch = null,
         public ?string $branchCode = null,
         public ?string $susepProcess = null,
         public ?string $ciCode = null,
-        public PolicyStatusEnum $status = PolicyStatusEnum::Draft,
+        public PolicyStatusEnum $status = PolicyStatusEnum::Active,
         public ?Carbon $startDate = null,
         public ?Carbon $endDate = null,
         public ?array $insuredObject = null,
@@ -38,6 +40,7 @@ final readonly class PolicyData
         public ?string $netPremium = null,
         public ?string $iofAmount = null,
         public ?string $totalPremium = null,
+        public ?string $deductibleAmount = null,
         public PolicyPaymentMethodEnum $paymentMethod = PolicyPaymentMethodEnum::Invoice,
         public ?int $installmentsCount = null,
         public ?array $installmentsSchedule = null,
@@ -51,8 +54,8 @@ final readonly class PolicyData
     public static function fromArray(array $data): self
     {
         return new self(
-            tenantId: (int) $data['tenant_id'],
-            createdBy: (int) $data['created_by'],
+            tenantId: (int) ($data['tenant_id'] ?? 1),
+            createdBy: self::nullableInt($data['created_by'] ?? null),
 
             insuredId: self::nullableInt($data['insured_id'] ?? null),
             productId: self::nullableInt($data['product_id'] ?? null),
@@ -60,13 +63,15 @@ final readonly class PolicyData
 
             policyNumber: self::nullableString($data['policy_number'] ?? null),
             proposalNumber: self::nullableString($data['proposal_number'] ?? null),
+            insurer: self::nullableString($data['insurer'] ?? null),
+            branch: self::nullableString($data['branch'] ?? null),
             branchCode: self::nullableString($data['branch_code'] ?? null),
             susepProcess: self::nullableString($data['susep_process'] ?? null),
             ciCode: self::nullableString($data['ci_code'] ?? null),
 
             status: filled($data['status'] ?? null)
-                ? PolicyStatusEnum::from((string) $data['status'])
-                : PolicyStatusEnum::Draft,
+                ? ($data['status'] instanceof PolicyStatusEnum ? $data['status'] : PolicyStatusEnum::from((string) $data['status']))
+                : PolicyStatusEnum::Active,
 
             startDate: self::nullableCarbon($data['start_date'] ?? null),
             endDate: self::nullableCarbon($data['end_date'] ?? null),
@@ -77,9 +82,10 @@ final readonly class PolicyData
             netPremium: self::nullableDecimal($data['net_premium'] ?? null),
             iofAmount: self::nullableDecimal($data['iof_amount'] ?? null),
             totalPremium: self::nullableDecimal($data['total_premium'] ?? null),
+            deductibleAmount: self::nullableDecimal($data['deductible_amount'] ?? null),
 
             paymentMethod: filled($data['payment_method'] ?? null)
-                ? PolicyPaymentMethodEnum::from((string) $data['payment_method'])
+                ? ($data['payment_method'] instanceof PolicyPaymentMethodEnum ? $data['payment_method'] : PolicyPaymentMethodEnum::from((string) $data['payment_method']))
                 : PolicyPaymentMethodEnum::Invoice,
 
             installmentsCount: self::nullableInt($data['installments_count'] ?? null),
@@ -102,6 +108,8 @@ final readonly class PolicyData
             'created_by'           => $this->createdBy,
             'policy_number'        => $this->policyNumber,
             'proposal_number'      => $this->proposalNumber,
+            'insurer'              => $this->insurer,
+            'branch'               => $this->branch,
             'branch_code'          => $this->branchCode,
             'susep_process'        => $this->susepProcess,
             'ci_code'              => $this->ciCode,
@@ -113,6 +121,7 @@ final readonly class PolicyData
             'net_premium'          => $this->netPremium !== null ? (float) $this->netPremium : null,
             'iof_amount'           => $this->iofAmount !== null ? (float) $this->iofAmount : null,
             'total_premium'        => $this->totalPremium !== null ? (float) $this->totalPremium : null,
+            'deductible_amount'    => $this->deductibleAmount !== null ? (float) $this->deductibleAmount : null,
             'payment_method'       => $this->paymentMethod->value,
             'installments_count'   => $this->installmentsCount,
             'installments_schedule'=> $this->installmentsSchedule,

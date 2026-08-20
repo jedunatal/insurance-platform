@@ -5,8 +5,8 @@ namespace App\Livewire\Policy;
 use App\Models\Policy;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\TextEntry;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
@@ -48,28 +48,30 @@ class View extends Component implements HasActions, HasSchemas
         return $schema
             ->record($this->record)
             ->schema([
-                Section::make('Informações Gerais')
+                Section::make('Informações Gerais do Contrato')
                     ->schema([
                         TextEntry::make('policy_number')->label('Número da Apólice'),
                         TextEntry::make('proposal_number')->label('Proposta')->placeholder('-'),
-                        TextEntry::make('branch_code')->label('Ramo')->placeholder('-'),
+                        TextEntry::make('insurer')->label('Seguradora')->placeholder('Não informada'),
+                        TextEntry::make('branch')->label('Ramo do Seguro')->placeholder('-'),
                         TextEntry::make('status')->label('Status')->badge(),
-                        TextEntry::make('start_date')->label('Início da Vigência')->dateTime('d/m/Y'),
-                        TextEntry::make('end_date')->label('Fim da Vigência')->dateTime('d/m/Y'),
+                        TextEntry::make('start_date')->label('Início da Vigência')->date('d/m/Y'),
+                        TextEntry::make('end_date')->label('Fim da Vigência')->date('d/m/Y'),
                     ])->columns(3),
 
-                Section::make('Vínculos e Corretor')
+                Section::make('Vínculos e Responsáveis')
                     ->schema([
                         TextEntry::make('insured.name')->label('Segurado'),
-                        TextEntry::make('product.name')->label('Produto')->placeholder('Não informado'),
+                        TextEntry::make('product.name')->label('Produto / Catálogo')->placeholder('Não informado'),
                         TextEntry::make('broker.name')->label('Corretor Responsável')->placeholder('Não atribuído'),
                     ])->columns(3),
 
-                Section::make('Financeiro')
+                Section::make('Financeiro e Franquia')
                     ->schema([
                         TextEntry::make('net_premium')->label('Prêmio Líquido')->money('BRL'),
                         TextEntry::make('iof_amount')->label('IOF')->money('BRL'),
                         TextEntry::make('total_premium')->label('Prêmio Total')->money('BRL'),
+                        TextEntry::make('deductible_amount')->label('Franquia Principal')->money('BRL'),
                         TextEntry::make('payment_method')->label('Forma de Pagamento'),
                         TextEntry::make('installments_count')->label('Parcelas'),
                     ])->columns(3),

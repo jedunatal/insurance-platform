@@ -4,6 +4,8 @@ namespace App\Livewire\Policy;
 
 use App\Models\Policy;
 use App\Enums\PolicyStatusEnum;
+use App\Enums\InsuranceBranchEnum;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\ViewAction;
@@ -30,41 +32,10 @@ class ListAll extends Component implements HasTable, HasActions, HasForms
     use InteractsWithActions;
     use InteractsWithForms;
 
-    public function mount(): void
-    {
-        /*
-         |--------------------------------------------------------------------------
-         | TEMPORÁRIO
-         |--------------------------------------------------------------------------
-         | O projeto ainda não possui autenticação.
-         | Quando o login estiver implementado, descomente a linha abaixo.
-         |
-         | abort_unless(auth()->user()->checkPermissionTo('view policies'), 403);
-         |
-         */
-    }
-
     public function table(Table $table): Table
     {
         return $table
-            /*
-             |--------------------------------------------------------------------------
-             | TEMPORÁRIO
-             |--------------------------------------------------------------------------
-             | Como ainda não existe usuário autenticado, não é possível filtrar
-             | pelo tenant do usuário.
-             |
-             | Original:
-             |
-             | ->query(
-             |     Policy::query()
-             |         ->where('tenant_id', auth()->user()->tenant_id)
-             | )
-             |
-             | Quando implementar autenticação, volte para o código acima.
-             |--------------------------------------------------------------------------
-             */
-            ->query(Policy::query()->latest())
+            ->query(Policy::query()->with(['insured', 'product', 'broker'])->latest())
             ->headerActions([
                 CreateAction::make('create')
                     ->label('Nova Apólice')
@@ -78,12 +49,14 @@ class ListAll extends Component implements HasTable, HasActions, HasForms
                 TextColumn::make('policy_number')
                     ->label('Nº da Apólice')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->description(fn(Policy $record): ?string => $record->insurer ?? 'Seguradora não informada'),
 
                 TextColumn::make('insured.name')
                     ->label('Segurado')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->description(fn(Policy $record): ?string => $record->branch ? "Ramo: {$record->branch}" : null),
 
                 TextColumn::make('status')
                     ->label('Status')
@@ -92,16 +65,24 @@ class ListAll extends Component implements HasTable, HasActions, HasForms
                 TextColumn::make('total_premium')
                     ->label('Prêmio Total')
                     ->money('BRL')
-                    ->sortable(),
+                    ->sortable()
+                    ->description(fn(Policy $record): ?string => $record->deductible_amount > 0 ? "Franquia: " . $record->formattedDeductibleAmount() : null),
 
                 TextColumn::make('end_date')
-                    ->label('Vencimento')
-                    ->date('d/m/Y')
+                    ->label('Vigência')
+                    ->formatStateUsing(fn (Policy $record): string => $record->start_date && $record->end_date 
+                        ? $record->start_date->format('d/m/Y') . ' até ' . $record->end_date->format('d/m/Y')
+                        : ($record->end_date ? $record->end_date->format('d/m/Y') : '-'))
                     ->sortable(),
             ])
-
             ->recordActions([
                 ActionGroup::make([
+                    Action::make('claim')
+                        ->label('Avisar Sinistro')
+                        ->icon('heroicon-o-exclamation-triangle')
+                        ->color('warning')
+                        ->url(fn (Policy $record): string => route('claims.create', ['policy_id' => $record->id])),
+
                     ViewAction::make('view')
                         ->label('Visualizar')
                         ->icon('heroicon-o-eye')
@@ -113,6 +94,7 @@ class ListAll extends Component implements HasTable, HasActions, HasForms
                         ->icon('heroicon-o-pencil')
                         ->color('secondary')
                         ->url(fn(Policy $record): string => route('policies.edit', $record)),
+
                     DeleteAction::make('delete')
                         ->label('Excluir')
                         ->icon('heroicon-o-trash')
@@ -124,13 +106,14 @@ class ListAll extends Component implements HasTable, HasActions, HasForms
             ->filters([
                 SelectFilter::make('status')
                     ->label('Filtrar por Status')
-                    ->options(
-                        collect(PolicyStatusEnum::cases())->pluck('name', 'value')->toArray()
-                    ),
+                    ->options(PolicyStatusEnum::options()),
+
+                SelectFilter::make('branch')
+                    ->label('Filtrar por Ramo')
+                    ->options(InsuranceBranchEnum::options()),
             ])
             ->emptyStateHeading('Nenhuma apólice encontrada')
             ->emptyStateDescription('Não encontramos registros correspondentes à pesquisa ou filtro selecionado.');
-
     }
 
     public function render()

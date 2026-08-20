@@ -22,7 +22,7 @@ class Create extends Component implements HasActions, HasSchemas
     {
         $this->form->fill([
             'source' => 'manual',
-            'status' => 'novo',
+            'status' => \App\Enums\LeadStatusEnum::New->value,
         ]);
     }
 

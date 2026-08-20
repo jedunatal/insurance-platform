@@ -49,6 +49,11 @@ class View extends Component implements HasActions, HasSchemas
                             ->label('CPF / CNPJ')
                             ->placeholder('Não informado'),
 
+                        TextEntry::make('birth_date')
+                            ->label(fn ($record) => $record->person_type?->value === 'PJ' ? 'Data de Fundação' : 'Data de Nascimento')
+                            ->date('d/m/Y')
+                            ->placeholder('Não informada'),
+
                         TextEntry::make('name')
                             ->label('Nome / Razão Social')
                             ->columnSpanFull(),

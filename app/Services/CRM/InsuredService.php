@@ -2,12 +2,14 @@
 
 namespace App\Services\CRM;
 
+use App\Actions\Insured\ConvertLeadToInsuredAction;
 use App\Actions\Insured\CreateInsuredAction;
 use App\Actions\Insured\DeleteInsuredAction;
 use App\Actions\Insured\UpdateInsuredAction;
 use App\DTOs\InsuredDTO;
 use App\Enums\PersonTypeEnum;
 use App\Models\Insured;
+use App\Models\Lead;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -17,7 +19,13 @@ final class InsuredService
         private readonly CreateInsuredAction $createAction,
         private readonly UpdateInsuredAction $updateAction,
         private readonly DeleteInsuredAction $deleteAction,
+        private readonly ConvertLeadToInsuredAction $convertLeadAction,
     ) {
+    }
+
+    public function convertLead(Lead|int $lead, array $additionalData = []): Insured
+    {
+        return $this->convertLeadAction->execute($lead, $additionalData);
     }
 
     public function create(InsuredDTO $dto): Insured

@@ -42,7 +42,7 @@ return new class extends Migration
 
             // Controle da Origem e Status
             $table->string('source', 30)->default('manual'); // Ex: 'site', 'manual', 'whatsapp', 'indicacao'
-            $table->string('status', 30)->default('novo');    // Ex: 'novo', 'em_atendimento', 'cotado', 'ganho', 'perdido'
+            $table->string('status', 30)->default('Novo');    // Ex: 'Novo', 'Em Negociação', 'Proposta', 'Convertido', 'Perdido'
 
             // Agenda e Acompanhamento
             $table->dateTime('next_contact_at')->nullable();

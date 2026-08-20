@@ -79,7 +79,7 @@ class BaseForm
                                 ->default('PF')
                                 ->required()
                                 ->live()
-                                ->columnSpan(['default' => 12, 'md' => 4]),
+                                ->columnSpan(['default' => 12, 'md' => 3]),
 
                             TextInput::make('document')
                                 ->label(fn ($get) => $get('person_type') === 'PJ' ? 'CNPJ' : 'CPF')
@@ -88,7 +88,13 @@ class BaseForm
                                 ->extraInputAttributes([
                                     'x-mask:dynamic' => '$input.length > 14 ? "99.999.999/9999-99" : "999.999.999-99"',
                                 ])
-                                ->columnSpan(['default' => 12, 'md' => 8]),
+                                ->columnSpan(['default' => 12, 'md' => 5]),
+
+                            \Filament\Forms\Components\DatePicker::make('birth_date')
+                                ->label(fn ($get) => $get('person_type') === 'PJ' ? 'Data de Fundação' : 'Data de Nascimento')
+                                ->native(false)
+                                ->displayFormat('d/m/Y')
+                                ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('name')
                                 ->label(fn ($get) => $get('person_type') === 'PJ' ? 'Razão Social' : 'Nome Completo')

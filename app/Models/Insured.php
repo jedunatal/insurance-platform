@@ -27,6 +27,7 @@ class Insured extends Model
         'phone',
         'document',
         'person_type',
+        'birth_date',
         'zip_code',
         'address',
         'number',
@@ -41,6 +42,7 @@ class Insured extends Model
     {
         return [
             'person_type' => PersonTypeEnum::class,
+            'birth_date' => 'date',
         ];
     }
 
@@ -73,6 +75,11 @@ class Insured extends Model
     public function policies(): HasMany
     {
         return $this->hasMany(Policy::class);
+    }
+
+    public function claims(): HasMany
+    {
+        return $this->hasMany(Claim::class);
     }
 
     /*
@@ -140,5 +147,44 @@ class Insured extends Model
         return $this->person_type === PersonTypeEnum::Legal
             ? preg_replace('/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/', '$1.$2.$3/$4-$5', $digits)
             : preg_replace('/^(\d{3})(\d{3})(\d{3})(\d{2})$/', '$1.$2.$3-$4', $digits);
+    }
+
+    public function formattedBirthDate(): ?string
+    {
+        return $this->birth_date?->format('d/m/Y');
+    }
+
+    public function formattedPhone(): ?string
+    {
+        if (! $this->phone) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D/', '', $this->phone);
+
+        if (strlen($digits) === 11) {
+            return preg_replace('/^(\d{2})(\d{5})(\d{4})$/', '($1) $2-$3', $digits);
+        }
+
+        if (strlen($digits) === 10) {
+            return preg_replace('/^(\d{2})(\d{4})(\d{4})$/', '($1) $2-$3', $digits);
+        }
+
+        return $this->phone;
+    }
+
+    public function fullAddress(): ?string
+    {
+        $parts = array_filter([
+            $this->address,
+            $this->number ? 'nº ' . $this->number : null,
+            $this->complement,
+            $this->neighborhood,
+            $this->city,
+            $this->state,
+            $this->zip_code ? 'CEP: ' . $this->zip_code : null,
+        ]);
+
+        return $parts !== [] ? implode(', ', $parts) : null;
     }
 }

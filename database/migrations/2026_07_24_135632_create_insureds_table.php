@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('document')->nullable(); // CPF / CNPJ
             $table->string('person_type')->default('PF'); // PF / PJ
+            $table->date('birth_date')->nullable(); // Data de Nascimento / Fundação
 
             // Endereço do Segurado
             $table->string('zip_code')->nullable();

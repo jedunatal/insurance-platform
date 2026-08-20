@@ -9,8 +9,9 @@ final readonly class InsuredDTO
     public function __construct(
         public string $name,
         public int $tenantId,
-        public int $createdBy,
+        public ?int $createdBy = null,
         public ?PersonTypeEnum $personType = null,
+        public ?string $birthDate = null,
         public ?string $email = null,
         public ?string $phone = null,
         public ?string $document = null,
@@ -35,13 +36,15 @@ final readonly class InsuredDTO
         return new self(
             name: (string) $data['name'],
 
-            tenantId: (int) $data['tenant_id'],
+            tenantId: (int) ($data['tenant_id'] ?? 1),
 
-            createdBy: (int) $data['created_by'],
+            createdBy: self::nullableInt($data['created_by'] ?? null),
 
             personType: filled($data['person_type'] ?? null)
-                ? PersonTypeEnum::from($data['person_type'])
+                ? ($data['person_type'] instanceof PersonTypeEnum ? $data['person_type'] : PersonTypeEnum::from($data['person_type']))
                 : PersonTypeEnum::Individual,
+
+            birthDate: self::nullableString($data['birth_date'] ?? null),
 
             email: filled($data['email'] ?? null)
                 ? (string) $data['email']
@@ -86,6 +89,11 @@ final readonly class InsuredDTO
         return filled($value) ? (string) $value : null;
     }
 
+    private static function nullableInt(mixed $value): ?int
+    {
+        return filled($value) ? (int) $value : null;
+    }
+
     /**
      * @return array<string,mixed>
      */
@@ -101,6 +109,7 @@ final readonly class InsuredDTO
             'phone'        => $this->phone,
             'document'     => $this->document,
             'person_type'  => $this->personType?->value,
+            'birth_date'   => $this->birthDate,
             'zip_code'     => $this->zipCode,
             'address'      => $this->address,
             'number'       => $this->number,

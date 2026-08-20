@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ClaimStatusEnum;
+use App\Enums\ClaimTypeEnum;
 use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +20,9 @@ class Claim extends Model
         'insured_id',
         'created_by',
         'claim_number',
+        'protocol_number',
         'insurer_claim_number',
+        'claim_type',
         'status',
         'occurrence_date',
         'report_date',
@@ -34,6 +37,7 @@ class Claim extends Model
 
     protected $casts = [
         'status' => ClaimStatusEnum::class,
+        'claim_type' => ClaimTypeEnum::class,
         'occurrence_date' => 'datetime',
         'report_date' => 'datetime',
         'third_party_details' => 'array',
@@ -60,5 +64,20 @@ class Claim extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function formattedEstimatedAmount(): string
+    {
+        return 'R$ ' . number_format((float) $this->estimated_amount, 2, ',', '.');
+    }
+
+    public function formattedIndemnifiedAmount(): string
+    {
+        return 'R$ ' . number_format((float) $this->indemnified_amount, 2, ',', '.');
+    }
+
+    public function formattedDeductibleAmount(): string
+    {
+        return 'R$ ' . number_format((float) $this->deductible_amount, 2, ',', '.');
     }
 }

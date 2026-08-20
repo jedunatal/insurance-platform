@@ -192,7 +192,7 @@ final class PolicyService
     public function insuredOptions(int $tenantId): array
     {
         return Insured::query()
-            ->forTenant($tenantId)
+            ->when($tenantId > 0, fn ($q) => $q->forTenant($tenantId))
             ->orderBy('name')
             ->pluck('name', 'id')
             ->all();
@@ -204,7 +204,7 @@ final class PolicyService
     public function productOptions(int $tenantId): array
     {
         return Product::query()
-            ->where('tenant_id', $tenantId)
+            ->when($tenantId > 0, fn ($q) => $q->where('tenant_id', $tenantId))
             ->where('is_active', true)
             ->orderBy('name')
             ->pluck('name', 'id')
@@ -217,7 +217,7 @@ final class PolicyService
     public function brokerOptions(int $tenantId): array
     {
         return User::query()
-            ->where('tenant_id', $tenantId)
+            ->when($tenantId > 0, fn ($q) => $q->where('tenant_id', $tenantId))
             ->orderBy('name')
             ->pluck('name', 'id')
             ->all();

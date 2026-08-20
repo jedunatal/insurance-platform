@@ -2,13 +2,17 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasIcon;
+use Filament\Support\Contracts\HasLabel;
+
 /**
  * Status do ciclo de vida de uma Apólice.
  *
  * Mapeia o fluxo Porto Seguro:
  * Rascunho -> Vigente -> Renovação Pendente -> Renovada / Cancelada / Expirada.
  */
-enum PolicyStatusEnum: string
+enum PolicyStatusEnum: string implements HasLabel, HasColor, HasIcon
 {
     case Draft = 'draft';
     case Active = 'active';
@@ -16,6 +20,21 @@ enum PolicyStatusEnum: string
     case Renewed = 'renewed';
     case Cancelled = 'cancelled';
     case Expired = 'expired';
+
+    public function getLabel(): ?string
+    {
+        return $this->label();
+    }
+
+    public function getColor(): string|array|null
+    {
+        return $this->color();
+    }
+
+    public function getIcon(): ?string
+    {
+        return $this->icon();
+    }
 
     /*
     |--------------------------------------------------------------------------

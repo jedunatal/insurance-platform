@@ -13,18 +13,20 @@ return new class extends Migration
 
             // --- Tenant & Relacionamentos ---
             $table->foreignId('tenant_id')->nullable()->constrained('tenants')->nullOnDelete();
-            $table->foreignId('insured_id')->nullable()->constrained('insureds')->nullOnDelete();
+            $table->foreignId('insured_id')->constrained('insureds')->cascadeOnDelete();
             $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
             $table->foreignId('broker_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
 
             // --- Dados do Contrato ---
-            $table->string('policy_number')->unique()->nullable();
+            $table->string('policy_number')->unique();
             $table->string('proposal_number')->nullable();
+            $table->string('insurer')->nullable()->comment('Seguradora (ex: Porto Seguro, Bradesco, Allianz, Tokio Marine, SulAmérica)');
+            $table->string('branch')->nullable()->comment('Ramo do seguro (ex: Automóvel, Vida, Residencial, Empresarial)');
             $table->string('branch_code', 6)->nullable()->comment('Código do ramo SUSEP (ex: 171 - Equipamentos)');
             $table->string('susep_process')->nullable()->comment('Número do processo SUSEP');
             $table->string('ci_code')->nullable()->comment('Código do CI (Comunicado Interno)');
-            $table->string('status')->default('draft')->index();
+            $table->string('status')->default('active')->index();
 
             // --- Vigência ---
             $table->dateTime('start_date')->nullable();
@@ -40,6 +42,7 @@ return new class extends Migration
             $table->decimal('net_premium', 14, 2)->default(0);
             $table->decimal('iof_amount', 14, 2)->default(0);
             $table->decimal('total_premium', 14, 2)->default(0);
+            $table->decimal('deductible_amount', 14, 2)->default(0)->comment('Valor da Franquia');
             $table->string('payment_method')->default('invoice');
             $table->unsignedSmallInteger('installments_count')->default(1);
             $table->json('installments_schedule')->nullable()->comment('Tabela de parcelas (vencimento, valor, status)');

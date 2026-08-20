@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 
@@ -26,6 +27,8 @@ class Policy extends Model
         'created_by',
         'policy_number',
         'proposal_number',
+        'insurer',
+        'branch',
         'branch_code',
         'susep_process',
         'ci_code',
@@ -37,6 +40,7 @@ class Policy extends Model
         'net_premium',
         'iof_amount',
         'total_premium',
+        'deductible_amount',
         'payment_method',
         'installments_count',
         'installments_schedule',
@@ -54,6 +58,7 @@ class Policy extends Model
             'net_premium'         => 'decimal:2',
             'iof_amount'          => 'decimal:2',
             'total_premium'       => 'decimal:2',
+            'deductible_amount'   => 'decimal:2',
             'installments_count'  => 'integer',
             'status'              => PolicyStatusEnum::class,
             'payment_method'      => PolicyPaymentMethodEnum::class,
@@ -89,6 +94,11 @@ class Policy extends Model
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function claims(): HasMany
+    {
+        return $this->hasMany(Claim::class);
     }
 
     /*
@@ -213,6 +223,23 @@ class Policy extends Model
     public function formattedTotalPremium(): string
     {
         return 'R$ ' . number_format((float) $this->total_premium, 2, ',', '.');
+    }
+
+    public function formattedDeductibleAmount(): string
+    {
+        return 'R$ ' . number_format((float) $this->deductible_amount, 2, ',', '.');
+    }
+
+    public function formattedValidity(): string
+    {
+        if (! $this->start_date && ! $this->end_date) {
+            return 'Vigência não informada';
+        }
+
+        $start = $this->start_date ? $this->start_date->format('d/m/Y') : 'Início não definido';
+        $end = $this->end_date ? $this->end_date->format('d/m/Y') : 'Fim não definido';
+
+        return "{$start} a {$end}";
     }
 
     /**

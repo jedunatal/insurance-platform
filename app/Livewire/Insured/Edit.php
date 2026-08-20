@@ -9,6 +9,7 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -28,11 +29,13 @@ class Edit extends Component implements HasActions, HasSchemas
 
         $this->form->fill(
             $this->record->only([
+                'lead_id',
                 'name',
                 'email',
                 'phone',
                 'document',
                 'person_type',
+                'birth_date',
                 'zip_code',
                 'address',
                 'number',

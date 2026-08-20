@@ -2,24 +2,29 @@
 
 namespace App\Livewire\Claim;
 
+use App\Enums\ClaimStatusEnum;
+use App\Enums\ClaimTypeEnum;
 use App\Models\Claim;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Contracts\HasTable;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Title('Sinistros')]
+#[Layout('layouts.app')]
 final class ListAll extends Component implements HasActions, HasForms, HasTable
 {
     use InteractsWithTable;
@@ -29,25 +34,38 @@ final class ListAll extends Component implements HasActions, HasForms, HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(Claim::query()->where('tenant_id', auth()->user()?->tenant_id ?? 1))
+            ->query(Claim::query()->with(['insured', 'policy'])->latest())
+            ->headerActions([
+                CreateAction::make('create')
+                    ->label('Avisar Sinistro')
+                    ->icon('heroicon-o-plus')
+                    ->url(route('claims.create'))
+                    ->extraAttributes([
+                        'class' => '!bg-[#295384] hover:!bg-[#1c385a] !text-white [&_svg]:!text-white font-medium transition-colors shadow-xs',
+                    ]),
+            ])
             ->columns([
                 TextColumn::make('claim_number')
                     ->label('Nº Sinistro')
                     ->placeholder('S/N')
-                    ->searchable(),
+                    ->searchable()
+                    ->description(fn (Claim $record): ?string => $record->protocol_number ? "Prot: {$record->protocol_number}" : null),
 
                 TextColumn::make('insured.name')
                     ->label('Segurado')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->description(fn (Claim $record): ?string => $record->policy?->policy_number ? "Apólice: {$record->policy->policy_number}" : null),
 
-                TextColumn::make('policy.policy_number')
-                    ->label('Apólice')
-                    ->searchable(),
+                TextColumn::make('claim_type')
+                    ->label('Tipo de Sinistro')
+                    ->badge()
+                    ->sortable(),
 
                 TextColumn::make('status')
                     ->label('Status')
-                    ->badge(),
+                    ->badge()
+                    ->sortable(),
 
                 TextColumn::make('occurrence_date')
                     ->label('Data Evento')
@@ -58,6 +76,12 @@ final class ListAll extends Component implements HasActions, HasForms, HasTable
                     ->label('Est. Prejuízo')
                     ->money('BRL')
                     ->sortable(),
+
+                TextColumn::make('indemnified_amount')
+                    ->label('Indenizado')
+                    ->money('BRL')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([
                 ActionGroup::make([
@@ -77,10 +101,21 @@ final class ListAll extends Component implements HasActions, HasForms, HasTable
                         ->label('Excluir')
                         ->icon('heroicon-o-trash')
                         ->color('danger')
-                        ->successNotificationTitle('Segurado excluído com sucesso!'),
+                        ->successNotificationTitle('Sinistro excluído com sucesso!'),
                 ])
                     ->label('Ações'),
-            ]);
+            ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options(ClaimStatusEnum::options()),
+
+                SelectFilter::make('claim_type')
+                    ->label('Tipo de Sinistro')
+                    ->options(ClaimTypeEnum::options()),
+            ])
+            ->emptyStateHeading('Nenhum sinistro encontrado')
+            ->emptyStateDescription('Não encontramos ocorrências correspondentes aos filtros selecionados.');
     }
 
     public function render()

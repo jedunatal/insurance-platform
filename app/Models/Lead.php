@@ -76,6 +76,12 @@ class Lead extends Model
         return $this->belongsTo(User::class, 'assigned_to'); // Indica qual usuário é o responsável atual pelo lead
     }
 
+    // Relacionamento com o Segurado gerado a partir da conversão deste Lead
+    public function insured(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Insured::class);
+    }
+
     // Relacionamento de pertencimento (BelongsTo) com o Usuário que realizou o cadastro
     public function createdBy(): BelongsTo
     {

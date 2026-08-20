@@ -16,7 +16,9 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->string('claim_number')->nullable()->index(); // Nº interno do Sinistro
-            $table->string('insurer_claim_number')->nullable(); // Nº do Sinistro na Seguradora
+            $table->string('protocol_number')->nullable()->index(); // Protocolo / Nº Sinistro Seguradora
+            $table->string('insurer_claim_number')->nullable(); // Nº do Sinistro na Seguradora (alias/compat)
+            $table->string('claim_type')->nullable()->comment('Tipo: Colisão, Roubo/Furto, Terceiros, Incêndio, etc.');
             $table->string('status')->default('reported');
 
             $table->dateTime('occurrence_date');
