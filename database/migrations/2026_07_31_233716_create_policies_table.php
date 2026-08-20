@@ -40,8 +40,11 @@ return new class extends Migration
 
             // --- Financeiro & Pagamento ---
             $table->decimal('net_premium', 14, 2)->default(0);
+            $table->decimal('iof_rate', 5, 2)->default(7.38);
             $table->decimal('iof_amount', 14, 2)->default(0);
             $table->decimal('total_premium', 14, 2)->default(0);
+            $table->decimal('commission_percentage', 5, 2)->default(0);
+            $table->decimal('commission_amount', 14, 2)->default(0);
             $table->decimal('deductible_amount', 14, 2)->default(0)->comment('Valor da Franquia');
             $table->string('payment_method')->default('invoice');
             $table->unsignedSmallInteger('installments_count')->default(1);

@@ -4,7 +4,7 @@ namespace App\Livewire\Policy;
 
 use App\DTOs\PolicyData;
 use App\Enums\InsuranceBranchEnum;
-use App\Enums\PolicyPaymentMethodEnum;
+use App\Enums\PaymentMethodEnum;
 use App\Enums\PolicyStatusEnum;
 use App\Models\Insured;
 use App\Models\Policy;
@@ -45,16 +45,16 @@ class BaseForm
                                 ->label('Seguradora')
                                 ->placeholder('Selecione ou digite a seguradora')
                                 ->options([
-                                    'Porto Seguro' => 'Porto Seguro',
-                                    'Azul Seguros' => 'Azul Seguros',
-                                    'Bradesco Seguros' => 'Bradesco Seguros',
+                                    'Porto Seguro'    => 'Porto Seguro',
+                                    'Azul Seguros'    => 'Azul Seguros',
+                                    'Bradesco Seguros'=> 'Bradesco Seguros',
                                     'Allianz Seguros' => 'Allianz Seguros',
-                                    'Tokio Marine' => 'Tokio Marine',
-                                    'SulAmérica' => 'SulAmérica',
-                                    'Mapfre Seguros' => 'Mapfre Seguros',
-                                    'Zurich Seguros' => 'Zurich Seguros',
-                                    'HDI Seguros' => 'HDI Seguros',
-                                    'Sompo Seguros' => 'Sompo Seguros',
+                                    'Tokio Marine'    => 'Tokio Marine',
+                                    'SulAmérica'      => 'SulAmérica',
+                                    'Mapfre Seguros'  => 'Mapfre Seguros',
+                                    'Zurich Seguros'  => 'Zurich Seguros',
+                                    'HDI Seguros'     => 'HDI Seguros',
+                                    'Sompo Seguros'   => 'Sompo Seguros',
                                     'Liberty Seguros' => 'Liberty Seguros',
                                 ])
                                 ->searchable()
@@ -66,6 +66,23 @@ class BaseForm
                                 ->searchable()
                                 ->live()
                                 ->required()
+                                ->afterStateUpdated(function ($state, $set, $get) {
+                                    if ($state) {
+                                        $branchEnum = InsuranceBranchEnum::tryFrom($state);
+                                        if ($branchEnum) {
+                                            $rate = $branchEnum->defaultIofRate();
+                                            $set('iof_rate', $rate);
+
+                                            $net = (float) ($get('net_premium') ?? 0);
+                                            $iof = round($net * ($rate / 100), 2);
+                                            $set('iof_amount', $iof);
+                                            $set('total_premium', round($net + $iof, 2));
+
+                                            $commRate = (float) ($get('commission_percentage') ?? 0);
+                                            $set('commission_amount', round($net * ($commRate / 100), 2));
+                                        }
+                                    }
+                                })
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
                             Select::make('product_id')
@@ -129,7 +146,7 @@ class BaseForm
                         ->columns(12)
                         ->columnSpan(12),
 
-                    // 3. Valores e Pagamento
+                    // 3. Valores, Tributos, Comissões e Pagamento
                     Section::make('Valores e Condições de Pagamento')
                         ->schema([
                             TextInput::make('net_premium')
@@ -141,14 +158,35 @@ class BaseForm
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(function ($state, $set, $get) {
                                     $net = (float) ($state ?? 0);
-                                    $iof = round($net * 0.0738, 2);
+                                    $rate = (float) ($get('iof_rate') ?? 7.38);
+                                    $iof = round($net * ($rate / 100), 2);
+                                    $commRate = (float) ($get('commission_percentage') ?? 0);
+                                    $comm = round($net * ($commRate / 100), 2);
+
+                                    $set('iof_amount', $iof);
+                                    $set('total_premium', round($net + $iof, 2));
+                                    $set('commission_amount', $comm);
+                                })
+                                ->columnSpan(['default' => 12, 'md' => 4]),
+
+                            TextInput::make('iof_rate')
+                                ->label('Alíquota IOF')
+                                ->numeric()
+                                ->suffix('%')
+                                ->default(7.38)
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function ($state, $set, $get) {
+                                    $net = (float) ($get('net_premium') ?? 0);
+                                    $rate = (float) ($state ?? 0);
+                                    $iof = round($net * ($rate / 100), 2);
+
                                     $set('iof_amount', $iof);
                                     $set('total_premium', round($net + $iof, 2));
                                 })
-                                ->columnSpan(['default' => 12, 'md' => 3]),
+                                ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('iof_amount')
-                                ->label('IOF (7,38%)')
+                                ->label('Valor do IOF')
                                 ->numeric()
                                 ->prefix('R$')
                                 ->default(0)
@@ -158,37 +196,60 @@ class BaseForm
                                     $iof = (float) ($state ?? 0);
                                     $set('total_premium', round($net + $iof, 2));
                                 })
-                                ->columnSpan(['default' => 12, 'md' => 3]),
+                                ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('total_premium')
                                 ->label('Prêmio Total')
                                 ->numeric()
                                 ->prefix('R$')
                                 ->default(0)
-                                ->required()
-                                ->columnSpan(['default' => 12, 'md' => 3]),
+                                ->readOnly()
+                                ->columnSpan(['default' => 12, 'md' => 4]),
+
+                            TextInput::make('commission_percentage')
+                                ->label('Comissão do Corretor')
+                                ->numeric()
+                                ->suffix('%')
+                                ->default(0)
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function ($state, $set, $get) {
+                                    $net = (float) ($get('net_premium') ?? 0);
+                                    $commRate = (float) ($state ?? 0);
+                                    $comm = round($net * ($commRate / 100), 2);
+                                    $set('commission_amount', $comm);
+                                })
+                                ->columnSpan(['default' => 12, 'md' => 4]),
+
+                            TextInput::make('commission_amount')
+                                ->label('Comissão Prevista')
+                                ->numeric()
+                                ->prefix('R$')
+                                ->default(0)
+                                ->readOnly()
+                                ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('deductible_amount')
                                 ->label('Valor da Franquia Principal')
                                 ->numeric()
                                 ->prefix('R$')
                                 ->default(0)
-                                ->columnSpan(['default' => 12, 'md' => 3]),
+                                ->columnSpan(['default' => 12, 'md' => 4]),
 
                             Select::make('payment_method')
                                 ->label('Forma de Pagamento')
-                                ->options(PolicyPaymentMethodEnum::options())
-                                ->default(PolicyPaymentMethodEnum::Invoice->value)
+                                ->options(PaymentMethodEnum::options())
+                                ->default(PaymentMethodEnum::Invoice->value)
                                 ->required()
-                                ->columnSpan(['default' => 12, 'md' => 6]),
+                                ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('installments_count')
                                 ->label('Quantidade de Parcelas')
                                 ->numeric()
                                 ->default(1)
                                 ->minValue(1)
+                                ->maxValue(36)
                                 ->required()
-                                ->columnSpan(['default' => 12, 'md' => 6]),
+                                ->columnSpan(['default' => 12, 'md' => 4]),
                         ])
                         ->columns(12)
                         ->columnSpan(12),

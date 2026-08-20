@@ -69,6 +69,18 @@ enum InsuranceBranchEnum: string implements HasLabel, HasColor, HasIcon
     }
 
     /**
+     * Retorna a alíquota padrão de IOF conforme a regulamentação do ramo de seguro.
+     */
+    public function defaultIofRate(): float
+    {
+        return match ($this) {
+            self::Auto, self::Home, self::Business, self::Electronics, self::Liability, self::Other => 7.38,
+            self::Life, self::Health => 0.38,
+            self::Rural => 0.00,
+        };
+    }
+
+    /**
      * @return array<string, string>
      */
     public static function options(): array

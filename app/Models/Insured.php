@@ -77,6 +77,11 @@ class Insured extends Model
         return $this->hasMany(Policy::class);
     }
 
+    public function installments(): HasMany
+    {
+        return $this->hasMany(PolicyInstallment::class);
+    }
+
     public function claims(): HasMany
     {
         return $this->hasMany(Claim::class);

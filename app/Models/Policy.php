@@ -38,8 +38,11 @@ class Policy extends Model
         'insured_object',
         'coverages',
         'net_premium',
+        'iof_rate',
         'iof_amount',
         'total_premium',
+        'commission_percentage',
+        'commission_amount',
         'deductible_amount',
         'payment_method',
         'installments_count',
@@ -50,18 +53,21 @@ class Policy extends Model
     protected function casts(): array
     {
         return [
-            'start_date'          => 'datetime',
-            'end_date'           => 'datetime',
-            'insured_object'      => 'array',
-            'coverages'           => 'array',
+            'start_date'            => 'datetime',
+            'end_date'              => 'datetime',
+            'insured_object'        => 'array',
+            'coverages'             => 'array',
             'installments_schedule' => 'array',
-            'net_premium'         => 'decimal:2',
-            'iof_amount'          => 'decimal:2',
-            'total_premium'       => 'decimal:2',
-            'deductible_amount'   => 'decimal:2',
-            'installments_count'  => 'integer',
-            'status'              => PolicyStatusEnum::class,
-            'payment_method'      => PolicyPaymentMethodEnum::class,
+            'net_premium'           => 'decimal:2',
+            'iof_rate'              => 'decimal:2',
+            'iof_amount'            => 'decimal:2',
+            'total_premium'         => 'decimal:2',
+            'commission_percentage' => 'decimal:2',
+            'commission_amount'     => 'decimal:2',
+            'deductible_amount'     => 'decimal:2',
+            'installments_count'    => 'integer',
+            'status'                => PolicyStatusEnum::class,
+            'payment_method'        => PolicyPaymentMethodEnum::class,
         ];
     }
 
@@ -99,6 +105,11 @@ class Policy extends Model
     public function claims(): HasMany
     {
         return $this->hasMany(Claim::class);
+    }
+
+    public function installments(): HasMany
+    {
+        return $this->hasMany(PolicyInstallment::class)->orderBy('installment_number');
     }
 
     /*

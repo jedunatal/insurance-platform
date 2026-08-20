@@ -2,6 +2,7 @@
 
 use App\Livewire\Claim;
 use App\Livewire\Dashboard;
+use App\Livewire\Financial;
 use App\Livewire\Insured;
 use App\Livewire\Lead;
 use App\Livewire\Policy;
@@ -40,4 +41,9 @@ Route::prefix('claims')->name('claims.')->group(function () {
     Route::get('/create', Claim\Create::class)->name('create');
     Route::get('/{record}', Claim\View::class)->name('view');
     Route::get('/{record}/edit', Claim\Edit::class)->name('edit');
+});
+
+// Gestão Financeira & Comissões (Financial)
+Route::prefix('financial')->name('financial.')->group(function () {
+    Route::get('/', Financial\ListInstallments::class)->name('index');
 });
