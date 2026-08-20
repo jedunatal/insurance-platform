@@ -46,6 +46,18 @@ return new class extends Migration
                 }
             });
         }
+
+        // 4. Atualizações na tabela 'products'
+        if (Schema::hasTable('products')) {
+            Schema::table('products', function (Blueprint $table): void {
+                if (! Schema::hasColumn('products', 'branch')) {
+                    $table->string('branch')->nullable()->after('name');
+                }
+                if (! Schema::hasColumn('products', 'description')) {
+                    $table->text('description')->nullable()->after('branch');
+                }
+            });
+        }
     }
 
     public function down(): void

@@ -64,12 +64,14 @@ class BaseForm
                                 ->label('Ramo do Seguro')
                                 ->options(InsuranceBranchEnum::options())
                                 ->searchable()
+                                ->live()
                                 ->required()
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
                             Select::make('product_id')
                                 ->label('Produto / Catálogo')
-                                ->options(fn () => app(PolicyService::class)->productOptions($this->resolveTenantId()))
+                                ->placeholder('Selecione o produto...')
+                                ->options(fn ($get) => app(PolicyService::class)->productOptions($this->resolveTenantId(), $get('branch')))
                                 ->searchable()
                                 ->preload()
                                 ->nullable()

@@ -2,18 +2,17 @@
 
 namespace App\Livewire\Lead;
 
+use App\Enums\InsuranceBranchEnum;
 use App\Enums\LeadSourceEnum;
 use App\Enums\LeadStatusEnum;
 use App\Models\Lead;
 use App\Models\Product;
 use App\Models\Tenant;
-use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 use Illuminate\Support\Facades\DB;
 
 class BaseForm
@@ -49,17 +48,27 @@ class BaseForm
                     TextInput::make('document')
                         ->label('CPF / CNPJ')
                         ->placeholder('000.000.000-00 ou 00.000.000/0000-00')
-                        ->required()
+                        ->nullable()
                         ->extraInputAttributes([
                             'x-mask:dynamic' => '$input.length > 14 ? "99.999.999/9999-99" : "999.999.999-99"',
                         ]),
 
                     Select::make('product_id')
                         ->label('Ramo / Produto de Interesse')
+                        ->placeholder('Selecione o produto ou ramo de interesse...')
                         ->options(function () {
-                            if (!class_exists(Product::class))
-                                return [];
-                            return Product::query()->where('is_active', true)->pluck('name', 'id');
+                            if (! class_exists(Product::class)) {
+                                return InsuranceBranchEnum::options();
+                            }
+
+                            $products = Product::query()
+                                ->where('is_active', true)
+                                ->orderBy('name')
+                                ->pluck('name', 'id')
+                                ->all();
+
+                            // Fallback caso a tabela ainda não possua produtos cadastrados
+                            return ! empty($products) ? $products : InsuranceBranchEnum::options();
                         })
                         ->searchable()
                         ->preload()
@@ -67,9 +76,7 @@ class BaseForm
 
                     Select::make('source')
                         ->label('Origem do Cliente')
-                        ->options(
-                            collect(LeadSourceEnum::cases())->pluck('name', 'value')->toArray()
-                        )
+                        ->options(LeadSourceEnum::options())
                         ->default('manual')
                         ->required(),
 
@@ -99,8 +106,6 @@ class BaseForm
     public static function create(array $data): ?Lead
     {
         return DB::transaction(function () use ($data) {
-            
-            // GARANTIA: Se o Tenant #1 não existir no banco, ele é criado automaticamente aqui
             $tenant = Tenant::firstOrCreate(
                 ['id' => 1],
                 [
@@ -114,7 +119,6 @@ class BaseForm
             $data['tenant_id']  = auth()->check() ? (auth()->user()->tenant_id ?? $tenant->id) : $tenant->id;
             $data['created_by'] = auth()->id();
 
-            // Grava fisicamente no banco MySQL
             return Lead::create($data);
         });
     }

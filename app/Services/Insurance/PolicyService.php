@@ -201,10 +201,11 @@ final class PolicyService
     /**
      * @return array<int, string>
      */
-    public function productOptions(int $tenantId): array
+    public function productOptions(int $tenantId, ?string $branch = null): array
     {
         return Product::query()
             ->when($tenantId > 0, fn ($q) => $q->where('tenant_id', $tenantId))
+            ->when($branch, fn ($q) => $q->where('branch', $branch))
             ->where('is_active', true)
             ->orderBy('name')
             ->pluck('name', 'id')
