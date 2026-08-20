@@ -77,6 +77,13 @@ class ListAll extends Component implements HasTable, HasActions, HasForms
             ])
             ->recordActions([
                 ActionGroup::make([
+                    Action::make('document')
+                        ->label('Certificado / Imprimir PDF')
+                        ->icon('heroicon-o-printer')
+                        ->color('info')
+                        ->url(fn (Policy $record): string => route('policies.document.view', $record))
+                        ->openUrlInNewTab(),
+
                     Action::make('claim')
                         ->label('Avisar Sinistro')
                         ->icon('heroicon-o-exclamation-triangle')

@@ -2,17 +2,24 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasLabel;
+
 /**
  * Modalidades de pagamento de uma Apólice.
  *
  * Segue a nomenclatura utilizada na bilhetagem Porto Seguro.
  */
-enum PolicyPaymentMethodEnum: string
+enum PolicyPaymentMethodEnum: string implements HasLabel
 {
     case CreditCard = 'credit_card';
     case Debit     = 'debit';
     case Invoice   = 'invoice';
     case Pix       = 'pix';
+
+    public function getLabel(): ?string
+    {
+        return $this->label();
+    }
 
     public function label(): string
     {

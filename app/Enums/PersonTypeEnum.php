@@ -2,10 +2,17 @@
 
 namespace App\Enums;
 
-enum PersonTypeEnum: string
+use Filament\Support\Contracts\HasLabel;
+
+enum PersonTypeEnum: string implements HasLabel
 {
     case Individual = 'PF';
     case Legal = 'PJ';
+
+    public function getLabel(): ?string
+    {
+        return $this->label();
+    }
 
     public function label(): string
     {

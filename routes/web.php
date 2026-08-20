@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PolicyDocumentController;
 use App\Livewire\Claim;
 use App\Livewire\Dashboard;
 use App\Livewire\Financial;
@@ -31,6 +32,9 @@ Route::prefix('insureds')->name('insureds.')->group(function () {
 Route::prefix('policies')->name('policies.')->group(function () {
     Route::get('/', Policy\ListAll::class)->name('index');
     Route::get('/create', Policy\Create::class)->name('create');
+    Route::get('/{policy}/document', [PolicyDocumentController::class, 'show'])->name('document.view');
+    Route::get('/{policy}/document/pdf', [PolicyDocumentController::class, 'streamPdf'])->name('document.pdf');
+    Route::get('/{policy}/document/download', [PolicyDocumentController::class, 'downloadPdf'])->name('document.download');
     Route::get('/{record}', Policy\View::class)->name('view');
     Route::get('/{record}/edit', Policy\Edit::class)->name('edit');
 });
