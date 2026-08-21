@@ -38,7 +38,7 @@
                 class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold shadow-sm transition"
             >
                 <x-heroicon-m-user-plus class="w-4 h-4" />
-                Novo Lead
+                Novo Cliente em Potencial
             </a>
         </div>
     </div>
