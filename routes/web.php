@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\PolicyDocumentController;
 use App\Http\Controllers\QuoteDocumentController;
+use App\Livewire\Auth\RegisterBrokerage;
 use App\Livewire\Claim;
 use App\Livewire\Dashboard;
 use App\Livewire\Financial;
@@ -13,6 +13,7 @@ use App\Livewire\Lead;
 use App\Livewire\Policy;
 use App\Livewire\Quote;
 use App\Livewire\Renewal;
+use App\Livewire\Settings\TeamManager;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,8 +25,8 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
 
-    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [RegisterController::class, 'register']);
+    // Auto-Cadastro de Corretoras (Multi-Tenant)
+    Route::get('/register', RegisterBrokerage::class)->name('register');
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
@@ -99,5 +100,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{document}/preview', [DocumentController::class, 'preview'])->name('preview')->middleware('throttle:30,1');
         Route::get('/{document}/download', [DocumentController::class, 'download'])->name('download')->middleware('throttle:30,1');
         Route::delete('/{document}', [DocumentController::class, 'destroy'])->name('destroy');
+    });
+
+    // Configurações & Gestão da Equipe (RBAC)
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', fn () => redirect()->route('settings.team'))->name('index');
+        Route::get('/team', TeamManager::class)->name('team');
     });
 });

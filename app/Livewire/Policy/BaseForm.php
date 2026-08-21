@@ -423,8 +423,9 @@ class BaseForm
                         ->schema([
                             Select::make('producer_id')
                                 ->label('Produtor / Parceiro Comercial')
-                                ->options(fn () => User::pluck('name', 'id'))
+                                ->options(fn () => User::where('tenant_id', auth()->user()?->tenant_id ?? 1)->where('is_active', true)->pluck('name', 'id'))
                                 ->searchable()
+                                ->preload()
                                 ->nullable()
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 

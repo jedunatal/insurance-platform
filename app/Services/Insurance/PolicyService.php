@@ -219,6 +219,7 @@ final class PolicyService
     {
         return User::query()
             ->when($tenantId > 0, fn ($q) => $q->where('tenant_id', $tenantId))
+            ->where('is_active', true)
             ->orderBy('name')
             ->pluck('name', 'id')
             ->all();

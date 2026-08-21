@@ -143,12 +143,12 @@
                             type="button" 
                             class="flex items-center gap-2.5 p-1.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/60 transition text-left focus:outline-none"
                         >
-                            <div class="w-8 h-8 rounded-xl bg-[#295384] flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md">
-                                JE
+                            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#295384] to-[#1f3f66] flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md">
+                                {{ strtoupper(substr(auth()->user()->name ?? 'CO', 0, 2)) }}
                             </div>
                             <div class="hidden md:flex flex-col leading-tight">
-                                <span class="text-xs font-bold text-slate-900 dark:text-white">Jorge Eduardo</span>
-                                <span class="text-[10px] text-slate-500 dark:text-slate-400">Consultor Senior</span>
+                                <span class="text-xs font-bold text-slate-900 dark:text-white">{{ auth()->user()->name ?? 'Corretor' }}</span>
+                                <span class="text-[10px] text-slate-500 dark:text-slate-400">{{ auth()->user()?->roleTitle() ?? 'Corretor Gestor' }}</span>
                             </div>
                             <svg class="w-4 h-4 text-slate-400 hidden md:block transition-transform duration-200" :class="userMenuOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -166,23 +166,33 @@
                             x-transition:leave="transition ease-in duration-75"
                             x-transition:leave-start="transform opacity-100 scale-100"
                             x-transition:leave-end="transform opacity-0 scale-95"
-                            class="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 shadow-xl dark:shadow-2xl focus:outline-none"
+                            class="absolute right-0 z-50 mt-2 w-60 origin-top-right rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 shadow-xl dark:shadow-2xl focus:outline-none"
                         >
                             <div class="px-3 py-2 border-b border-slate-100 dark:border-slate-800">
-                                <p class="text-xs font-bold text-slate-900 dark:text-white">Jorge Eduardo</p>
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">jorge@corretora.com</p>
+                                <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name ?? 'Corretor' }}</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">{{ auth()->user()->email ?? 'corretor@corretora.com' }}</p>
+                                <div class="mt-1.5 flex items-center gap-1.5">
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#295384]/10 text-[#295384] dark:text-blue-300">
+                                        🏢 {{ auth()->user()->tenant?->name ?? 'Minha Corretora' }}
+                                    </span>
+                                </div>
                             </div>
 
                             <div class="pt-1.5 space-y-0.5">
-                                <a href="#" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/60 transition">
-                                    <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                    <span>Configurações</span>
-                                </a>
+                                @if (auth()->user()?->canManageTeam())
+                                    <a href="{{ route('settings.team') }}" wire:navigate class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/60 transition">
+                                        <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        <span>Gestão da Equipe</span>
+                                    </a>
+                                @endif
 
-                                <a href="#" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/30 transition">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
-                                    <span>Sair</span>
-                                </a>
+                                <form action="{{ route('logout') }}" method="POST" class="w-full">
+                                    @csrf
+                                    <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-left cursor-pointer">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+                                        <span>Sair da Conta</span>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>

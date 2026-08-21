@@ -88,6 +88,14 @@ class BaseForm
                         ->default('manual')
                         ->required(),
 
+                    Select::make('assigned_to')
+                        ->label('Corretor / Consultor Responsável')
+                        ->options(fn () => \App\Models\User::where('tenant_id', auth()->user()?->tenant_id ?? 1)->where('is_active', true)->pluck('name', 'id'))
+                        ->default(fn () => auth()->id())
+                        ->searchable()
+                        ->preload()
+                        ->nullable(),
+
                     Select::make('status')
                         ->label('Status Inicial')
                         ->options(LeadStatusEnum::options())

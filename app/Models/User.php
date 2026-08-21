@@ -31,7 +31,9 @@ class User extends Authenticatable
         'tenant_id',
         'name',
         'email',
+        'phone',
         'password',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -43,7 +45,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'is_active'         => 'boolean',
         ];
     }
 
@@ -60,5 +63,35 @@ class User extends Authenticatable
     public function createdLeads(): HasMany
     {
         return $this->hasMany(Lead::class, 'created_by');
+    }
+
+    /**
+     * Retorna o título legível do cargo/role principal do usuário.
+     */
+    public function roleTitle(): string
+    {
+        if ($this->hasRole('super-admin') || $this->hasRole('admin')) {
+            return 'Administrador Geral';
+        }
+
+        if ($this->hasRole('broker')) {
+            return 'Corretor Gestor';
+        }
+
+        if ($this->hasRole('assistant') || $this->hasRole('consultant')) {
+            return 'Assistente / Consultor';
+        }
+
+        return 'Membro da Equipe';
+    }
+
+    public function canManageTeam(): bool
+    {
+        return $this->hasRole(['super-admin', 'admin', 'broker']);
+    }
+
+    public function canManageFinancial(): bool
+    {
+        return $this->hasRole(['super-admin', 'admin', 'broker']);
     }
 }
