@@ -17,6 +17,18 @@ use Illuminate\Support\Facades\Schema;
 class DashboardService
 {
     /**
+     * Lista de valores aceitos para o status ativo/vigente de apólices.
+     */
+    private const ACTIVE_POLICY_STATUSES = [
+        PolicyStatusEnum::Active->value,
+        'active',
+        'vigente',
+        'Vigente',
+        'Ativa',
+        'ativa',
+    ];
+
+    /**
      * Retorna os 4 KPIs principais e métricas consolidadas do topo do Dashboard.
      */
     public function getMetrics(?int $tenantId = null): array
@@ -29,7 +41,9 @@ class DashboardService
         $monthLeads = (clone $leadsQuery)->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count();
         $convertedLeads = (clone $leadsQuery)->where(function ($q) {
             $q->where('status', LeadStatusEnum::Converted->value)
-              ->orWhere('status', 'Convertido');
+              ->orWhere('status', 'converted')
+              ->orWhere('status', 'Convertido')
+              ->orWhere('status', 'convertido');
         })->count();
 
         $conversionRate = $totalLeads > 0 
@@ -40,15 +54,12 @@ class DashboardService
         $insuredsQuery = Insured::query()->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId));
         $totalInsureds = (clone $insuredsQuery)->count();
         $insuredsWithActivePolicies = (clone $insuredsQuery)
-            ->whereHas('policies', fn ($q) => $q->where('status', PolicyStatusEnum::Active->value)->orWhere('status', 'active'))
+            ->whereHas('policies', fn ($q) => $q->whereIn('status', self::ACTIVE_POLICY_STATUSES))
             ->count();
 
         // 3. Apólices e Carteira Ativa
         $policiesQuery = Policy::query()->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId));
-        $activePoliciesQuery = (clone $policiesQuery)->where(function ($q) {
-            $q->where('status', PolicyStatusEnum::Active->value)
-              ->orWhere('status', 'active');
-        });
+        $activePoliciesQuery = (clone $policiesQuery)->whereIn('status', self::ACTIVE_POLICY_STATUSES);
         $activePoliciesCount = (clone $activePoliciesQuery)->count();
         $totalActivePremium = (float) (clone $activePoliciesQuery)->sum('total_premium');
 
@@ -104,15 +115,15 @@ class DashboardService
     {
         $tenantId ??= auth()->user()?->tenant_id;
 
-        return Policy::with(['insured', 'product'])
+        return Policy::query()
+            ->with(['insured', 'product'])
             ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
-            ->where(function ($q) {
-                $q->where('status', PolicyStatusEnum::Active->value)
-                  ->orWhere('status', 'active')
-                  ->orWhere('status', 'Ativa');
-            })
+            ->whereIn('status', self::ACTIVE_POLICY_STATUSES)
             ->whereNotNull('end_date')
-            ->whereBetween('end_date', [now()->startOfDay(), now()->addDays($days)->endOfDay()])
+            ->whereBetween('end_date', [
+                now()->startOfDay(),
+                now()->addDays($days)->endOfDay(),
+            ])
             ->orderBy('end_date', 'asc')
             ->limit($limit)
             ->get();
@@ -127,13 +138,12 @@ class DashboardService
 
         return Policy::query()
             ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
-            ->where(function ($q) {
-                $q->where('status', PolicyStatusEnum::Active->value)
-                  ->orWhere('status', 'active')
-                  ->orWhere('status', 'Ativa');
-            })
+            ->whereIn('status', self::ACTIVE_POLICY_STATUSES)
             ->whereNotNull('end_date')
-            ->whereBetween('end_date', [now()->startOfDay(), now()->addDays($days)->endOfDay()])
+            ->whereBetween('end_date', [
+                now()->startOfDay(),
+                now()->addDays($days)->endOfDay(),
+            ])
             ->count();
     }
 
@@ -152,10 +162,7 @@ class DashboardService
 
         $results = Policy::query()
             ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
-            ->where(function ($q) {
-                $q->where('status', PolicyStatusEnum::Active->value)
-                  ->orWhere('status', 'active');
-            })
+            ->whereIn('status', self::ACTIVE_POLICY_STATUSES)
             ->whereNotNull('branch')
             ->select('branch', DB::raw('COUNT(*) as total_count'), DB::raw('SUM(total_premium) as sum_premium'))
             ->groupBy('branch')
@@ -193,10 +200,7 @@ class DashboardService
 
         $results = Policy::query()
             ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
-            ->where(function ($q) {
-                $q->where('status', PolicyStatusEnum::Active->value)
-                  ->orWhere('status', 'active');
-            })
+            ->whereIn('status', self::ACTIVE_POLICY_STATUSES)
             ->whereNotNull('insurer')
             ->where('insurer', '!=', '')
             ->select('insurer', DB::raw('COUNT(*) as total_count'), DB::raw('SUM(total_premium) as sum_premium'))
@@ -207,10 +211,7 @@ class DashboardService
 
         $totalPolicies = Policy::query()
             ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
-            ->where(function ($q) {
-                $q->where('status', PolicyStatusEnum::Active->value)
-                  ->orWhere('status', 'active');
-            })
+            ->whereIn('status', self::ACTIVE_POLICY_STATUSES)
             ->count();
 
         return $results->map(function ($row) use ($totalPolicies) {
@@ -239,11 +240,21 @@ class DashboardService
             ->pluck('total_count', 'status')
             ->all();
 
-        $totalLeads = array_sum($leadsByStatus);
+        $funnelCounts = [];
+        foreach (LeadStatusEnum::cases() as $case) {
+            $funnelCounts[$case->value] = 0;
+        }
+
+        foreach ($leadsByStatus as $statusStr => $count) {
+            $enum = LeadStatusEnum::fromValue($statusStr);
+            $funnelCounts[$enum->value] = ($funnelCounts[$enum->value] ?? 0) + (int) $count;
+        }
+
+        $totalLeads = array_sum($funnelCounts);
 
         $funnel = [];
         foreach (LeadStatusEnum::cases() as $case) {
-            $count = (int) ($leadsByStatus[$case->value] ?? $leadsByStatus[strtolower($case->value)] ?? 0);
+            $count = (int) ($funnelCounts[$case->value] ?? 0);
             $percentage = $totalLeads > 0 ? round(($count / $totalLeads) * 100, 1) : 0.0;
 
             $funnel[] = [

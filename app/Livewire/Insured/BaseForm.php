@@ -28,6 +28,7 @@ class BaseForm
 
                     // 1. Vínculo com Lead (Opcional - Autocomplete)
                     Section::make('Origem e Vínculo CRM')
+                        ->extraAttributes(['class' => 'relative z-30 overflow-visible'])
                         ->description('Vincule um Lead existente para importar os dados automaticamente.')
                         ->schema([
                             Select::make('lead_id')
@@ -37,6 +38,7 @@ class BaseForm
                                     Lead::where('status', '!=', LeadStatusEnum::Converted->value)
                                         ->orWhere('status', '!=', 'Convertido')
                                         ->pluck('name', 'id')
+                                        ->all()
                                 )
                                 ->searchable()
                                 ->live()
@@ -69,6 +71,7 @@ class BaseForm
 
                     // 2. Dados Principais
                     Section::make('Identificação do Segurado')
+                        ->extraAttributes(['class' => 'relative z-20 overflow-visible'])
                         ->schema([
                             Select::make('person_type')
                                 ->label('Tipo de Pessoa')
@@ -120,6 +123,7 @@ class BaseForm
 
                     // 3. Endereço Completo
                     Section::make('Endereço e Localização')
+                        ->extraAttributes(['class' => 'relative z-10 overflow-visible'])
                         ->schema([
                             TextInput::make('zip_code')
                                 ->label('CEP')
@@ -167,6 +171,7 @@ class BaseForm
 
                     // 4. Observações
                     Section::make('Anotações Adicionais')
+                        ->extraAttributes(['class' => 'relative z-1 overflow-visible'])
                         ->schema([
                             Textarea::make('notes')
                                 ->label('Observações do Cliente')

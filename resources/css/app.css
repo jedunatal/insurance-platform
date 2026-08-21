@@ -45,6 +45,28 @@
 }
 
 /* -------------------------------------------------------------------------- */
+/* 🛡️ CORREÇÃO DE STACKING CONTEXT & DROPDOWNS FLUTUANTES (EVITAR CORTES)     */
+/* -------------------------------------------------------------------------- */
+.fi-sc-section,
+.fi-section,
+.fi-section-content,
+.fi-fo-field-wrp,
+.fi-fo-field-wrp-label,
+.fi-input-wrp {
+    overflow: visible !important;
+}
+
+/* Garante que painéis flutuantes, selects e dropdowns fiquem sempre acima de seções seguintes */
+.fi-dropdown-panel,
+.fi-select-input-menu,
+.fi-popover-panel,
+[data-floating-ui-portal],
+[data-floating-ui-portal] > * {
+    z-index: 9999 !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* -------------------------------------------------------------------------- */
 /* ☀️ TABELAS NO MODO CLARO (Light Mode)                                     */
 /* -------------------------------------------------------------------------- */
 html:not(.dark) .fi-ta-ctn {

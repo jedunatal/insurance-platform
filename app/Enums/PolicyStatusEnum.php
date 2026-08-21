@@ -195,4 +195,28 @@ enum PolicyStatusEnum: string implements HasLabel, HasColor, HasIcon
             'value'
         );
     }
+
+    public static function fromValue(mixed $value): self
+    {
+        if ($value instanceof self) {
+            return $value;
+        }
+
+        $str = (string) $value;
+        $match = match (mb_strtolower(trim($str))) {
+            'draft', 'rascunho' => self::Draft,
+            'active', 'vigente', 'ativa', 'ativo' => self::Active,
+            'pending_renewal', 'renovação pendente', 'renovacao pendente', 'renovar' => self::PendingRenewal,
+            'renewed', 'renovada', 'renovado' => self::Renewed,
+            'cancelled', 'cancelada', 'cancelado' => self::Cancelled,
+            'expired', 'expirada', 'expirado' => self::Expired,
+            default => null,
+        };
+
+        if ($match) {
+            return $match;
+        }
+
+        return self::tryFrom($str) ?? self::Active;
+    }
 }

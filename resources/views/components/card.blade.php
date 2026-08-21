@@ -1,7 +1,7 @@
 @props(['title' => null, 'description' => null])
 
 <div
-    {{ $attributes->merge(['class' => 'bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm dark:shadow-xl backdrop-blur-md transition-all']) }}>
+    {{ $attributes->merge(['class' => 'bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm dark:shadow-xl backdrop-blur-md transition-all overflow-visible']) }}>
     @if ($title || isset($headerActions))
         <div class="border-b border-slate-100 dark:border-slate-800/60 pb-4 mb-5 flex items-center justify-between">
             <div>

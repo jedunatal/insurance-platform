@@ -76,6 +76,7 @@ class Create extends Component implements HasForms, HasActions
             ->statePath('data')
             ->schema([
                 Section::make('Identificação da Cotação')
+                    ->extraAttributes(['class' => 'relative z-20 overflow-visible'])
                     ->schema([
                         Grid::make(3)->schema([
                             TextInput::make('title')
@@ -113,6 +114,7 @@ class Create extends Component implements HasForms, HasActions
                     ]),
 
                 Section::make('Opções de Seguradoras para Comparativo')
+                    ->extraAttributes(['class' => 'relative z-10 overflow-visible'])
                     ->description('Adicione as alternativas de cálculo das seguradoras parceiras para gerar a comparação.')
                     ->schema([
                         Repeater::make('options')

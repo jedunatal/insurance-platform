@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Enums\InsuranceBranchEnum;
+use App\Enums\LeadStatusEnum;
 use App\Enums\PolicyStatusEnum;
 use App\Models\Insured;
+use App\Models\Lead;
 use App\Models\Policy;
 use App\Models\Tenant;
 use App\Services\CRM\DashboardService;
@@ -87,6 +89,78 @@ class RenewalsPipelineTest extends TestCase
         $this->assertEquals($expiringPolicy->id, $renewals->first()->id);
         $this->assertFalse($renewals->contains('id', $farPolicy->id));
         $this->assertFalse($renewals->contains('id', $cancelledPolicy->id));
+    }
+
+    public function test_critical_renewals_handles_multiple_active_status_synonyms(): void
+    {
+        [$tenant, $insured] = $this->createTenantAndInsured();
+
+        // Apólice gravada como 'Vigente'
+        $policyVigente = Policy::create([
+            'tenant_id'     => $tenant->id,
+            'insured_id'    => $insured->id,
+            'policy_number' => 'POL-VIGENTE-1',
+            'status'        => 'Vigente',
+            'start_date'    => now()->subYear(),
+            'end_date'      => now()->addDays(15),
+            'total_premium' => 2000.00,
+        ]);
+
+        // Apólice gravada como 'Ativa'
+        $policyAtiva = Policy::create([
+            'tenant_id'     => $tenant->id,
+            'insured_id'    => $insured->id,
+            'policy_number' => 'POL-ATIVA-1',
+            'status'        => 'Ativa',
+            'start_date'    => now()->subYear(),
+            'end_date'      => now()->addDays(20),
+            'total_premium' => 1500.00,
+        ]);
+
+        $service = app(DashboardService::class);
+        $renewals = $service->getCriticalRenewals(days: 30, limit: 10, tenantId: $tenant->id);
+        $count = $service->getCriticalRenewalsCount(days: 30, tenantId: $tenant->id);
+
+        $this->assertEquals(2, $count);
+        $this->assertCount(2, $renewals);
+        $this->assertTrue($renewals->contains('id', $policyVigente->id));
+        $this->assertTrue($renewals->contains('id', $policyAtiva->id));
+    }
+
+    public function test_lead_funnel_aggregates_correctly_with_status_cases(): void
+    {
+        [$tenant] = $this->createTenantAndInsured();
+
+        Lead::create([
+            'tenant_id' => $tenant->id,
+            'name'      => 'Lead Novo',
+            'status'    => 'Novo',
+        ]);
+
+        Lead::create([
+            'tenant_id' => $tenant->id,
+            'name'      => 'Lead Negociando',
+            'status'    => 'Em Negociação',
+        ]);
+
+        Lead::create([
+            'tenant_id' => $tenant->id,
+            'name'      => 'Lead Convertido',
+            'status'    => 'Convertido',
+        ]);
+
+        $service = app(DashboardService::class);
+        $funnel = $service->getLeadFunnel($tenant->id);
+
+        $this->assertIsArray($funnel);
+        $novoCase = collect($funnel)->firstWhere('status', LeadStatusEnum::New->value);
+        $this->assertEquals(1, $novoCase['count']);
+
+        $negCase = collect($funnel)->firstWhere('status', LeadStatusEnum::InNegotiation->value);
+        $this->assertEquals(1, $negCase['count']);
+
+        $convCase = collect($funnel)->firstWhere('status', LeadStatusEnum::Converted->value);
+        $this->assertEquals(1, $convCase['count']);
     }
 
     public function test_currency_helper_parses_brl_formats_correctly(): void

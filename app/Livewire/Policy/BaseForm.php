@@ -34,6 +34,7 @@ class BaseForm
                 ->schema([
                     // 1. Identificação do Contrato
                     Section::make('Identificação da Apólice e Segurado')
+                        ->extraAttributes(['class' => 'relative z-30 overflow-visible'])
                         ->schema([
                             Select::make('insured_id')
                                 ->label('Segurado')
@@ -132,6 +133,7 @@ class BaseForm
 
                     // 2. Vigência
                     Section::make('Vigência do Seguro')
+                        ->extraAttributes(['class' => 'relative z-20 overflow-visible'])
                         ->schema([
                             DatePicker::make('start_date')
                                 ->label('Início da Vigência')
@@ -154,6 +156,7 @@ class BaseForm
 
                     // 3. Dados Específicos por Ramo de Seguro (Automóvel, Imóvel ou Vida)
                     Section::make('Dados do Veículo (Automóvel)')
+                        ->extraAttributes(['class' => 'relative z-18 overflow-visible'])
                         ->description('Preencha os detalhes técnicos do veículo para apólices do ramo Auto.')
                         ->schema([
                             Grid::make(12)->schema([
@@ -203,6 +206,7 @@ class BaseForm
                         ->columnSpan(12),
 
                     Section::make('Dados do Imóvel / Risco (Residencial / Empresarial)')
+                        ->extraAttributes(['class' => 'relative z-16 overflow-visible'])
                         ->description('Informações sobre a localidade e características estruturais do imóvel segurado.')
                         ->schema([
                             Grid::make(12)->schema([
@@ -243,6 +247,7 @@ class BaseForm
                         ->columnSpan(12),
 
                     Section::make('Quadro de Beneficiários (Vida & Acidentes Pessoais)')
+                        ->extraAttributes(['class' => 'relative z-14 overflow-visible'])
                         ->description('Indicação expressa de beneficiários e respectiva partilha percentual.')
                         ->schema([
                             Repeater::make('beneficiaries')
@@ -283,6 +288,7 @@ class BaseForm
 
                     // 4. Valores, Tributos, Comissões e Pagamento
                     Section::make('Valores e Condições de Pagamento')
+                        ->extraAttributes(['class' => 'relative z-12 overflow-visible'])
                         ->schema([
                             TextInput::make('net_premium')
                                 ->label('Prêmio Líquido')
@@ -412,6 +418,7 @@ class BaseForm
 
                     // 5. Split de Comissões com Produtor / Parceiro
                     Section::make('Split de Comissão / Repasse a Produtor (Opcional)')
+                        ->extraAttributes(['class' => 'relative z-10 overflow-visible'])
                         ->description('Configure o rateio de comissão para corretores parceiros ou produtores comerciais.')
                         ->schema([
                             Select::make('producer_id')
@@ -451,6 +458,7 @@ class BaseForm
 
                     // 6. Coberturas Flexíveis
                     Section::make('Coberturas Contratadas')
+                        ->extraAttributes(['class' => 'relative z-6 overflow-visible'])
                         ->description('Adicione as coberturas, limites máximos de indenização (LMI) e franquias específicas.')
                         ->schema([
                             Repeater::make('coverages')
@@ -471,7 +479,7 @@ class BaseForm
                                         ->label('Franquia Específica')
                                         ->placeholder('Ex: R$ 2.500,00 ou Isenta')
                                         ->columnSpan(['default' => 12, 'md' => 3]),
-                                ])
+                                 ])
                                 ->columns(12)
                                 ->defaultItems(1)
                                 ->addActionLabel('+ Adicionar Cobertura')
@@ -482,6 +490,7 @@ class BaseForm
 
                     // 7. Anotações
                     Section::make('Anotações Gerais')
+                        ->extraAttributes(['class' => 'relative z-1 overflow-visible'])
                         ->schema([
                             Textarea::make('notes')
                                 ->label('Observações')

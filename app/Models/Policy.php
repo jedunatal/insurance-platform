@@ -84,7 +84,6 @@ class Policy extends Model
             'producer_commission_amount'     => 'decimal:2',
             'deductible_amount'              => 'decimal:2',
             'installments_count'             => 'integer',
-            'status'                         => PolicyStatusEnum::class,
             'renewal_status'                 => RenewalStageEnum::class,
             'payment_method'                 => PolicyPaymentMethodEnum::class,
         ];
@@ -379,6 +378,14 @@ class Policy extends Model
     {
         return Attribute::make(
             set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function status(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value) => $value instanceof PolicyStatusEnum ? $value : ($value ? PolicyStatusEnum::fromValue($value) : PolicyStatusEnum::Active),
+            set: fn (mixed $value) => $value instanceof PolicyStatusEnum ? $value->value : ($value ? PolicyStatusEnum::fromValue($value)->value : PolicyStatusEnum::Active->value),
         );
     }
 }

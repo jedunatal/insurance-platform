@@ -32,6 +32,7 @@ class BaseForm
                 ->schema([
                     // 1. Vínculos do Sinistro
                     Section::make('Identificação e Vínculo Contratual')
+                        ->extraAttributes(['class' => 'relative z-30 overflow-visible'])
                         ->description('Selecione o segurado e a apólice vigente para abertura do sinistro.')
                         ->schema([
                             Select::make('insured_id')
@@ -172,6 +173,7 @@ class BaseForm
 
                     // 2. Descrição Detalhada
                     Section::make('Detalhes da Ocorrência')
+                        ->extraAttributes(['class' => 'relative z-20 overflow-visible'])
                         ->schema([
                             Textarea::make('occurrence_description')
                                 ->label('Descrição Detalhada do Ocorrido')
@@ -184,6 +186,7 @@ class BaseForm
 
                     // 3. Valores e Franquias
                     Section::make('Regulação Financeira e Indenização')
+                        ->extraAttributes(['class' => 'relative z-10 overflow-visible'])
                         ->schema([
                             TextInput::make('estimated_amount')
                                 ->label('Prejuízo Estimado')
@@ -220,6 +223,7 @@ class BaseForm
 
                     // 4. Observações Internas
                     Section::make('Anotações do Atendimento')
+                        ->extraAttributes(['class' => 'relative z-1 overflow-visible'])
                         ->schema([
                             Textarea::make('notes')
                                 ->label('Observações Internas')

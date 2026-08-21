@@ -27,9 +27,9 @@ class BrokerNotificationService
         // 1. Apólices vencendo nos próximos 30 dias
         $expiringPolicies = Policy::query()
             ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
-            ->whereIn('status', [PolicyStatusEnum::Active->value, 'Ativa'])
+            ->whereIn('status', [PolicyStatusEnum::Active->value, 'active', 'vigente', 'Vigente', 'Ativa', 'ativa'])
             ->whereNotNull('end_date')
-            ->whereBetween('end_date', [now(), now()->addDays(30)])
+            ->whereBetween('end_date', [now()->startOfDay(), now()->addDays(30)->endOfDay()])
             ->count();
 
         // 2. Parcelas em Atraso

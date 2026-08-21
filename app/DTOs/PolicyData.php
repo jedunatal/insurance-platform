@@ -87,7 +87,7 @@ final readonly class PolicyData
             ciCode: self::nullableString($data['ci_code'] ?? null),
 
             status: filled($data['status'] ?? null)
-                ? ($data['status'] instanceof PolicyStatusEnum ? $data['status'] : PolicyStatusEnum::from((string) $data['status']))
+                ? PolicyStatusEnum::fromValue($data['status'])
                 : PolicyStatusEnum::Active,
 
             renewalStatus: filled($data['renewal_status'] ?? null)
