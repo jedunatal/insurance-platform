@@ -1,4 +1,4 @@
-# 🛡️ Insurance Platform
+# 👑 Salut Royale — Plataforma de Gestão de Seguros
 
 > **Plataforma Completa de Gestão Estratégica e Operacional para Corretoras de Seguros.**  
 > Desenvolvida com foco em alta performance, automação de processos, retenção de carteira e experiência fluida para o corretor.

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Insurance Platform' }}</title>
+    <title>{{ $title ?? 'Painel' }} | Salut Royale</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,12 +78,12 @@
         >
             {{-- Header da Marca --}}
             <div class="flex items-center gap-3 px-3 py-3 mb-4 border-b border-slate-200/80 dark:border-slate-800/60">
-                <div class="w-10 h-10 rounded-2xl bg-[#295384] flex items-center justify-center text-white font-extrabold text-xs shadow-md shrink-0">
-                    IP
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#295384] to-[#1a365d] flex items-center justify-center text-[#B99B6C] font-extrabold text-xs shadow-md shrink-0 ring-2 ring-[#B99B6C]/20">
+                    SR
                 </div>
                 <div x-show="!sidebarCollapsed" x-transition class="truncate">
-                    <h1 class="text-xs font-bold text-slate-900 dark:text-white tracking-wider uppercase">Insurance</h1>
-                    <p class="text-[10px] text-[#B99B6C] font-extrabold tracking-widest uppercase">PLATFORM</p>
+                    <h1 class="text-xs font-bold text-slate-900 dark:text-white tracking-wider uppercase">SALUT</h1>
+                    <p class="text-[10px] text-[#B99B6C] font-extrabold tracking-widest uppercase">ROYALE</p>
                 </div>
             </div>
 
@@ -94,12 +94,12 @@
 
             {{-- Resumo do Perfil na Sidebar Rodapé --}}
             <div class="pt-3 border-t border-slate-200/80 dark:border-slate-800/60 flex items-center gap-3 px-2">
-                <div class="w-9 h-9 rounded-xl bg-[#295384] flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md">
-                    IP
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#295384] to-[#1a365d] flex items-center justify-center text-[#B99B6C] font-bold text-xs shrink-0 shadow-md">
+                    SR
                 </div>
                 <div x-show="!sidebarCollapsed" x-transition class="truncate leading-tight">
-                    <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Insurance Platform</p>
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Plataforma de Gestão de Seguros</p>
+                    <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Salut Royale</p>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Corretora de Seguros</p>
                 </div>
             </div>
         </aside>
@@ -216,7 +216,7 @@
                 {{-- 🦶 RODAPÉ (FOOTER) COM SUAS CREDENCIAIS --}}
                 <footer class="pt-8 mt-12 border-t border-slate-200/80 dark:border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 shrink-0">
                     <div class="flex items-center gap-2">
-                        <span class="font-bold text-slate-800 dark:text-slate-200">InsurancePlatform</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">Salut Royale</span>
                         <span>&copy; {{ date('Y') }}</span>
                         <span class="hidden sm:inline">&bull;</span>
                         <span class="hidden sm:inline">Todos os direitos reservados.</span>
@@ -240,7 +240,12 @@
         <div class="fixed inset-0 flex">
             <div class="relative flex w-full max-w-xs flex-1 flex-col bg-white dark:bg-slate-900 p-6 border-r border-slate-200 dark:border-slate-800" @click.away="mobileSidebarOpen = false">
                 <div class="flex items-center justify-between mb-6">
-                    <span class="text-base font-bold text-slate-900 dark:text-white">InsurancePlatform</span>
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-[#295384] flex items-center justify-center text-[#B99B6C] font-extrabold text-xs shadow-md shrink-0">
+                            SR
+                        </div>
+                        <span class="text-base font-bold text-slate-900 dark:text-white">Salut Royale</span>
+                    </div>
                     <button @click="mobileSidebarOpen = false" class="text-slate-400 hover:text-slate-900 dark:hover:text-white">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>

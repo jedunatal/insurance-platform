@@ -174,8 +174,8 @@
     <table class="header-table">
         <tr>
             <td style="width: 50%; vertical-align: middle;">
-                <div class="brand-logo">INSURANCE PLATFORM</div>
-                <div class="brand-sub">Estudo Comparativo de Cotação</div>
+                <div class="brand-logo">SALUT ROYALE</div>
+                <div class="brand-sub">Salut Royale Corretora de Seguros</div>
             </td>
             <td style="width: 50%; vertical-align: middle;">
                 <div class="doc-title">Proposta de Seguro</div>
@@ -321,7 +321,7 @@
     </div>
 
     <div style="margin-top: 20px; text-align: center; font-size: 7.5pt; color: #475569;">
-        Documento gerado em {{ now()->format('d/m/Y H:i') }} • InsurancePlatform Corretora de Seguros
+        Documento gerado em {{ now()->format('d/m/Y H:i') }} • Salut Royale Corretora de Seguros
     </div>
 
 </body>
