@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\ClaimStatusEnum;
 use App\Enums\ClaimTypeEnum;
 use App\Models\Traits\BelongsToTenant;
+use App\Support\CurrencyHelper;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -64,6 +66,33 @@ class Claim extends Model
     public function attachments(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Attachment::class, 'attachable');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mutators para Formatação Monetária
+    |--------------------------------------------------------------------------
+    */
+
+    protected function estimatedAmount(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => \App\Support\CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function deductibleAmount(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => \App\Support\CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function indemnifiedAmount(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => \App\Support\CurrencyHelper::parse($value)
+        );
     }
 
     public function creator(): BelongsTo

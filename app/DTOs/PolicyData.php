@@ -193,7 +193,7 @@ final readonly class PolicyData
     private static function nullableDecimal(mixed $value): ?string
     {
         return filled($value)
-            ? number_format((float) $value, 2, '.', '')
+            ? \App\Support\CurrencyHelper::toDecimalString($value)
             : null;
     }
 

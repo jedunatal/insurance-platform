@@ -10,6 +10,7 @@ use App\Models\Insured;
 use App\Models\Policy;
 use App\Models\User;
 use App\Services\Insurance\PolicyService;
+use App\Support\CurrencyHelper;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -74,17 +75,17 @@ class BaseForm
                                             $rate = $branchEnum->defaultIofRate();
                                             $set('iof_rate', $rate);
 
-                                            $net = (float) ($get('net_premium') ?? 0);
+                                            $net = CurrencyHelper::parse($get('net_premium'));
                                             $iof = round($net * ($rate / 100), 2);
-                                            $set('iof_amount', $iof);
-                                            $set('total_premium', round($net + $iof, 2));
+                                            $set('iof_amount', number_format($iof, 2, ',', '.'));
+                                            $set('total_premium', number_format(round($net + $iof, 2), 2, ',', '.'));
 
-                                            $commRate = (float) ($get('commission_percentage') ?? 0);
+                                            $commRate = (float) (str_replace(',', '.', (string) ($get('commission_percentage') ?? 0)));
                                             $commAmount = round($net * ($commRate / 100), 2);
-                                            $set('commission_amount', $commAmount);
+                                            $set('commission_amount', number_format($commAmount, 2, ',', '.'));
 
-                                            $producerRate = (float) ($get('producer_commission_percentage') ?? 0);
-                                            $set('producer_commission_amount', round($commAmount * ($producerRate / 100), 2));
+                                            $producerRate = (float) (str_replace(',', '.', (string) ($get('producer_commission_percentage') ?? 0)));
+                                            $set('producer_commission_amount', number_format(round($commAmount * ($producerRate / 100), 2), 2, ',', '.'));
                                         }
                                     }
                                 })
@@ -188,7 +189,8 @@ class BaseForm
 
                                 TextInput::make('vehicle_data.overnight_zip_code')
                                     ->label('CEP de Pernoite')
-                                    ->placeholder('Ex: 01310-100')
+                                    ->placeholder('00000-000')
+                                    ->mask('99999-999')
                                     ->columnSpan(['default' => 12, 'md' => 3]),
 
                                 TextInput::make('vehicle_data.main_driver')
@@ -216,7 +218,8 @@ class BaseForm
 
                                 TextInput::make('property_data.risk_zip_code')
                                     ->label('CEP do Risco')
-                                    ->placeholder('Ex: 04538-133')
+                                    ->placeholder('00000-000')
+                                    ->mask('99999-999')
                                     ->columnSpan(['default' => 12, 'md' => 3]),
 
                                 Select::make('property_data.construction_type')
@@ -258,7 +261,8 @@ class BaseForm
 
                                     TextInput::make('document')
                                         ->label('CPF')
-                                        ->placeholder('Ex: 000.000.000-00')
+                                        ->placeholder('000.000.000-00')
+                                        ->mask('999.999.999-99')
                                         ->columnSpan(['default' => 12, 'md' => 3]),
 
                                     TextInput::make('share_percentage')
@@ -282,24 +286,27 @@ class BaseForm
                         ->schema([
                             TextInput::make('net_premium')
                                 ->label('Prêmio Líquido')
-                                ->numeric()
                                 ->prefix('R$')
-                                ->default(0)
+                                ->placeholder('0,00')
+                                ->default('0,00')
+                                ->extraInputAttributes([
+                                    'x-mask:dynamic' => '$money($input, \',\', \'.\', 2)',
+                                ])
                                 ->required()
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(function ($state, $set, $get) {
-                                    $net = (float) ($state ?? 0);
-                                    $rate = (float) ($get('iof_rate') ?? 7.38);
+                                    $net = CurrencyHelper::parse($state);
+                                    $rate = (float) (str_replace(',', '.', (string) ($get('iof_rate') ?? 7.38)));
                                     $iof = round($net * ($rate / 100), 2);
-                                    $commRate = (float) ($get('commission_percentage') ?? 0);
+                                    $commRate = (float) (str_replace(',', '.', (string) ($get('commission_percentage') ?? 0)));
                                     $comm = round($net * ($commRate / 100), 2);
 
-                                    $set('iof_amount', $iof);
-                                    $set('total_premium', round($net + $iof, 2));
-                                    $set('commission_amount', $comm);
+                                    $set('iof_amount', number_format($iof, 2, ',', '.'));
+                                    $set('total_premium', number_format(round($net + $iof, 2), 2, ',', '.'));
+                                    $set('commission_amount', number_format($comm, 2, ',', '.'));
 
-                                    $prodRate = (float) ($get('producer_commission_percentage') ?? 0);
-                                    $set('producer_commission_amount', round($comm * ($prodRate / 100), 2));
+                                    $prodRate = (float) (str_replace(',', '.', (string) ($get('producer_commission_percentage') ?? 0)));
+                                    $set('producer_commission_amount', number_format(round($comm * ($prodRate / 100), 2), 2, ',', '.'));
                                 })
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
@@ -310,33 +317,39 @@ class BaseForm
                                 ->default(7.38)
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(function ($state, $set, $get) {
-                                    $net = (float) ($get('net_premium') ?? 0);
-                                    $rate = (float) ($state ?? 0);
+                                    $net = CurrencyHelper::parse($get('net_premium'));
+                                    $rate = (float) (str_replace(',', '.', (string) ($state ?? 0)));
                                     $iof = round($net * ($rate / 100), 2);
 
-                                    $set('iof_amount', $iof);
-                                    $set('total_premium', round($net + $iof, 2));
+                                    $set('iof_amount', number_format($iof, 2, ',', '.'));
+                                    $set('total_premium', number_format(round($net + $iof, 2), 2, ',', '.'));
                                 })
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('iof_amount')
                                 ->label('Valor do IOF')
-                                ->numeric()
                                 ->prefix('R$')
-                                ->default(0)
+                                ->placeholder('0,00')
+                                ->default('0,00')
+                                ->extraInputAttributes([
+                                    'x-mask:dynamic' => '$money($input, \',\', \'.\', 2)',
+                                ])
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(function ($state, $set, $get) {
-                                    $net = (float) ($get('net_premium') ?? 0);
-                                    $iof = (float) ($state ?? 0);
-                                    $set('total_premium', round($net + $iof, 2));
+                                    $net = CurrencyHelper::parse($get('net_premium'));
+                                    $iof = CurrencyHelper::parse($state);
+                                    $set('total_premium', number_format(round($net + $iof, 2), 2, ',', '.'));
                                 })
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('total_premium')
                                 ->label('Prêmio Total')
-                                ->numeric()
                                 ->prefix('R$')
-                                ->default(0)
+                                ->placeholder('0,00')
+                                ->default('0,00')
+                                ->extraInputAttributes([
+                                    'x-mask:dynamic' => '$money($input, \',\', \'.\', 2)',
+                                ])
                                 ->readOnly()
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
@@ -347,29 +360,35 @@ class BaseForm
                                 ->default(0)
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(function ($state, $set, $get) {
-                                    $net = (float) ($get('net_premium') ?? 0);
-                                    $commRate = (float) ($state ?? 0);
+                                    $net = CurrencyHelper::parse($get('net_premium'));
+                                    $commRate = (float) (str_replace(',', '.', (string) ($state ?? 0)));
                                     $comm = round($net * ($commRate / 100), 2);
-                                    $set('commission_amount', $comm);
+                                    $set('commission_amount', number_format($comm, 2, ',', '.'));
 
-                                    $prodRate = (float) ($get('producer_commission_percentage') ?? 0);
-                                    $set('producer_commission_amount', round($comm * ($prodRate / 100), 2));
+                                    $prodRate = (float) (str_replace(',', '.', (string) ($get('producer_commission_percentage') ?? 0)));
+                                    $set('producer_commission_amount', number_format(round($comm * ($prodRate / 100), 2), 2, ',', '.'));
                                 })
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('commission_amount')
                                 ->label('Comissão Prevista')
-                                ->numeric()
                                 ->prefix('R$')
-                                ->default(0)
+                                ->placeholder('0,00')
+                                ->default('0,00')
+                                ->extraInputAttributes([
+                                    'x-mask:dynamic' => '$money($input, \',\', \'.\', 2)',
+                                ])
                                 ->readOnly()
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('deductible_amount')
                                 ->label('Valor da Franquia Principal')
-                                ->numeric()
                                 ->prefix('R$')
-                                ->default(0)
+                                ->placeholder('0,00')
+                                ->default('0,00')
+                                ->extraInputAttributes([
+                                    'x-mask:dynamic' => '$money($input, \',\', \'.\', 2)',
+                                ])
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
                             Select::make('payment_method')
@@ -409,17 +428,20 @@ class BaseForm
                                 ->default(0)
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(function ($state, $set, $get) {
-                                    $comm = (float) ($get('commission_amount') ?? 0);
-                                    $prodRate = (float) ($state ?? 0);
-                                    $set('producer_commission_amount', round($comm * ($prodRate / 100), 2));
+                                    $comm = CurrencyHelper::parse($get('commission_amount'));
+                                    $prodRate = (float) (str_replace(',', '.', (string) ($state ?? 0)));
+                                    $set('producer_commission_amount', number_format(round($comm * ($prodRate / 100), 2), 2, ',', '.'));
                                 })
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('producer_commission_amount')
                                 ->label('Valor do Repasse ao Produtor')
-                                ->numeric()
                                 ->prefix('R$')
-                                ->default(0)
+                                ->placeholder('0,00')
+                                ->default('0,00')
+                                ->extraInputAttributes([
+                                    'x-mask:dynamic' => '$money($input, \',\', \'.\', 2)',
+                                ])
                                 ->readOnly()
                                 ->columnSpan(['default' => 12, 'md' => 4]),
                         ])

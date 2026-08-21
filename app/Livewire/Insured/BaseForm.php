@@ -84,10 +84,8 @@ class BaseForm
                             TextInput::make('document')
                                 ->label(fn ($get) => $get('person_type') === 'PJ' ? 'CNPJ' : 'CPF')
                                 ->placeholder(fn ($get) => $get('person_type') === 'PJ' ? '00.000.000/0000-00' : '000.000.000-00')
+                                ->mask(fn ($get) => $get('person_type') === 'PJ' ? '99.999.999/9999-99' : '999.999.999-99')
                                 ->required()
-                                ->extraInputAttributes([
-                                    'x-mask:dynamic' => '$input.length > 14 ? "99.999.999/9999-99" : "999.999.999-99"',
-                                ])
                                 ->columnSpan(['default' => 12, 'md' => 5]),
 
                             \Filament\Forms\Components\DatePicker::make('birth_date')

@@ -187,23 +187,32 @@ class BaseForm
                         ->schema([
                             TextInput::make('estimated_amount')
                                 ->label('Prejuízo Estimado')
-                                ->numeric()
                                 ->prefix('R$')
-                                ->default(0)
+                                ->placeholder('0,00')
+                                ->default('0,00')
+                                ->extraInputAttributes([
+                                    'x-mask:dynamic' => '$money($input, \',\', \'.\', 2)',
+                                ])
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('deductible_amount')
                                 ->label('Valor da Franquia')
-                                ->numeric()
                                 ->prefix('R$')
-                                ->default(0)
+                                ->placeholder('0,00')
+                                ->default('0,00')
+                                ->extraInputAttributes([
+                                    'x-mask:dynamic' => '$money($input, \',\', \'.\', 2)',
+                                ])
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('indemnified_amount')
                                 ->label('Valor Indenizado Pago')
-                                ->numeric()
                                 ->prefix('R$')
-                                ->default(0)
+                                ->placeholder('0,00')
+                                ->default('0,00')
+                                ->extraInputAttributes([
+                                    'x-mask:dynamic' => '$money($input, \',\', \'.\', 2)',
+                                ])
                                 ->columnSpan(['default' => 12, 'md' => 4]),
                         ])
                         ->columns(12)

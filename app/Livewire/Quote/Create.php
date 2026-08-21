@@ -125,15 +125,21 @@ class Create extends Component implements HasForms, HasActions
                                         ->required(),
 
                                     TextInput::make('total_premium')
-                                        ->label('Prêmio Total (R$)')
+                                        ->label('Prêmio Total')
                                         ->prefix('R$')
-                                        ->numeric()
+                                        ->placeholder('0,00')
+                                        ->extraInputAttributes([
+                                            'x-mask:dynamic' => '$money($input, \',\', \'.\', 2)',
+                                        ])
                                         ->required(),
 
                                     TextInput::make('deductible_amount')
-                                        ->label('Franquia (R$)')
+                                        ->label('Franquia Principal')
                                         ->prefix('R$')
-                                        ->numeric()
+                                        ->placeholder('0,00')
+                                        ->extraInputAttributes([
+                                            'x-mask:dynamic' => '$money($input, \',\', \'.\', 2)',
+                                        ])
                                         ->required(),
                                 ]),
 

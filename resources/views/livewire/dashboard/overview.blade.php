@@ -167,7 +167,8 @@
                 <div class="divide-y divide-slate-100 dark:divide-slate-800/80 -mx-6 -my-4">
                     @forelse($criticalRenewals as $policy)
                         @php
-                            $daysLeft = (int) now()->startOfDay()->diffInDays($policy->end_date->startOfDay(), false);
+                            $endDate = $policy->end_date ? \Carbon\Carbon::parse($policy->end_date) : null;
+                            $daysLeft = $endDate ? (int) ceil(now()->startOfDay()->diffInDays($endDate->startOfDay(), false)) : 0;
                         @endphp
                         <div class="px-6 py-3.5 flex items-center justify-between hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
                             <div class="min-w-0 pr-4">
@@ -191,7 +192,7 @@
                             <div class="text-right shrink-0 flex items-center gap-3">
                                 <div>
                                     <span class="inline-block text-xs font-extrabold {{ $daysLeft <= 7 ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-[#B99B6C]' }}">
-                                        @if($daysLeft === 0)
+                                        @if($daysLeft <= 0)
                                             Vence hoje!
                                         @elseif($daysLeft === 1)
                                             Vence amanhã
@@ -200,17 +201,28 @@
                                         @endif
                                     </span>
                                     <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                                        R$ {{ number_format($policy->total_premium, 2, ',', '.') }}
+                                        R$ {{ number_format((float) $policy->total_premium, 2, ',', '.') }}
                                     </p>
                                 </div>
-                                <a
-                                    href="{{ route('policies.view', $policy) }}"
-                                    wire:navigate
-                                    class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-[#295384] hover:text-white text-slate-600 dark:text-slate-300 transition"
-                                    title="Visualizar Apólice"
-                                >
-                                    <x-heroicon-m-arrow-right class="w-4 h-4" />
-                                </a>
+                                <div class="flex items-center gap-1.5">
+                                    <a
+                                        href="{{ route('renewals.index') }}"
+                                        wire:navigate
+                                        class="px-2.5 py-1.5 rounded-xl bg-[#295384] hover:bg-[#1f3f66] text-white text-[11px] font-bold shadow-xs transition inline-flex items-center gap-1"
+                                        title="Abrir na Esteira de Renovações"
+                                    >
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                        Renovar
+                                    </a>
+                                    <a
+                                        href="{{ route('policies.view', $policy) }}"
+                                        wire:navigate
+                                        class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-[#295384] hover:text-white text-slate-600 dark:text-slate-300 transition"
+                                        title="Visualizar Apólice"
+                                    >
+                                        <x-heroicon-m-arrow-right class="w-4 h-4" />
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     @empty
@@ -224,9 +236,15 @@
                 <x-slot:footer>
                     <div class="flex items-center justify-between text-xs">
                         <span class="text-slate-400">Exibindo até 6 renovações imediatas</span>
-                        <a href="{{ route('policies.index') }}" wire:navigate class="font-semibold text-[#295384] dark:text-blue-400 hover:underline">
-                            Ver todas as apólices &rarr;
-                        </a>
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('renewals.index') }}" wire:navigate class="font-semibold text-amber-600 dark:text-[#B99B6C] hover:underline flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                Abrir Esteira &rarr;
+                            </a>
+                            <a href="{{ route('policies.index') }}" wire:navigate class="font-semibold text-[#295384] dark:text-blue-400 hover:underline">
+                                Ver todas as apólices &rarr;
+                            </a>
+                        </div>
                     </div>
                 </x-slot:footer>
             </x-card>

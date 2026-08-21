@@ -5,6 +5,7 @@ namespace App\Actions\Quote;
 use App\Enums\QuoteStatusEnum;
 use App\Models\Quote;
 use App\Models\QuoteOption;
+use App\Support\CurrencyHelper;
 use Illuminate\Support\Facades\DB;
 
 class CreateQuoteAction
@@ -42,16 +43,16 @@ class CreateQuoteAction
                     'quote_id'               => $quote->id,
                     'insurer'                => $opt['insurer'] ?? 'Seguradora',
                     'product_name'           => $opt['product_name'] ?? null,
-                    'net_premium'            => (float) ($opt['net_premium'] ?? 0),
-                    'iof_amount'             => (float) ($opt['iof_amount'] ?? 0),
-                    'total_premium'          => (float) ($opt['total_premium'] ?? 0),
+                    'net_premium'            => CurrencyHelper::parse($opt['net_premium'] ?? 0),
+                    'iof_amount'             => CurrencyHelper::parse($opt['iof_amount'] ?? 0),
+                    'total_premium'          => CurrencyHelper::parse($opt['total_premium'] ?? 0),
                     'deductible_type'        => $opt['deductible_type'] ?? 'normal',
-                    'deductible_amount'      => (float) ($opt['deductible_amount'] ?? 0),
+                    'deductible_amount'      => CurrencyHelper::parse($opt['deductible_amount'] ?? 0),
                     'car_rental'             => $opt['car_rental'] ?? null,
                     'glass_coverage'         => $opt['glass_coverage'] ?? null,
-                    'third_party_materials'  => (float) ($opt['third_party_materials'] ?? 0),
-                    'third_party_corporal'   => (float) ($opt['third_party_corporal'] ?? 0),
-                    'app_coverage'           => (float) ($opt['app_coverage'] ?? 0),
+                    'third_party_materials'  => CurrencyHelper::parse($opt['third_party_materials'] ?? 0),
+                    'third_party_corporal'   => CurrencyHelper::parse($opt['third_party_corporal'] ?? 0),
+                    'app_coverage'           => CurrencyHelper::parse($opt['app_coverage'] ?? 0),
                     'payment_conditions'     => $opt['payment_conditions'] ?? null,
                     'is_recommended'         => (bool) ($opt['is_recommended'] ?? false),
                     'is_accepted'            => (bool) ($opt['is_accepted'] ?? false),

@@ -4,6 +4,7 @@ namespace App\Livewire\Dashboard;
 
 use App\Services\CRM\DashboardService;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -11,6 +12,19 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class Overview extends Component
 {
+    #[On('policy-created')]
+    #[On('policy-updated')]
+    #[On('policy-renewed')]
+    #[On('claim-created')]
+    #[On('claim-updated')]
+    #[On('lead-created')]
+    #[On('lead-updated')]
+    #[On('refresh-dashboard')]
+    public function refreshData(): void
+    {
+        // Re-renders the component with freshly queried metrics
+    }
+
     public function render(DashboardService $service)
     {
         return view('livewire.dashboard.overview', [

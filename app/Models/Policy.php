@@ -6,7 +6,9 @@ use App\Enums\PolicyPaymentMethodEnum;
 use App\Enums\PolicyStatusEnum;
 use App\Enums\RenewalStageEnum;
 use App\Models\Traits\BelongsToTenant;
+use App\Support\CurrencyHelper;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -218,8 +220,13 @@ class Policy extends Model
     public function scopeExpiringSoon(Builder $query, int $days = 30): Builder
     {
         return $query
+            ->where(function ($q) {
+                $q->where('status', PolicyStatusEnum::Active->value)
+                  ->orWhere('status', 'active')
+                  ->orWhere('status', 'Ativa');
+            })
             ->whereNotNull('end_date')
-            ->whereBetween('end_date', [now(), now()->addDays($days)]);
+            ->whereBetween('end_date', [now()->startOfDay(), now()->addDays($days)->endOfDay()]);
     }
 
     public function scopeSearch(Builder $query, string $term): Builder
@@ -325,5 +332,53 @@ class Policy extends Model
         ]);
 
         return $parts !== [] ? implode(' ', $parts) : (Arr::get($this->insured_object, 'equipamento') ?? '-');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mutators para Formatação Monetária
+    |--------------------------------------------------------------------------
+    */
+
+    protected function netPremium(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function iofAmount(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function totalPremium(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function commissionAmount(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function producerCommissionAmount(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function deductibleAmount(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
     }
 }

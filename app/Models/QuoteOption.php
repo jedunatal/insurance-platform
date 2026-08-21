@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\CurrencyHelper;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -58,5 +60,53 @@ class QuoteOption extends Model
     public function formattedDeductibleAmount(): string
     {
         return 'R$ ' . number_format((float) $this->deductible_amount, 2, ',', '.');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mutators para Formatação Monetária
+    |--------------------------------------------------------------------------
+    */
+
+    protected function netPremium(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function iofAmount(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function totalPremium(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function deductibleAmount(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function thirdPartyMaterials(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
+    }
+
+    protected function thirdPartyCorporal(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => CurrencyHelper::parse($value)
+        );
     }
 }

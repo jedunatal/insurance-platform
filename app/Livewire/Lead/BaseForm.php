@@ -45,13 +45,21 @@ class BaseForm
                         ->placeholder('(21) 99999-9999')
                         ->required(),
 
+                    Select::make('person_type')
+                        ->label('Tipo de Pessoa')
+                        ->options([
+                            'PF' => 'Pessoa Física (CPF)',
+                            'PJ' => 'Pessoa Jurídica (CNPJ)',
+                        ])
+                        ->default('PF')
+                        ->live()
+                        ->dehydrated(false),
+
                     TextInput::make('document')
-                        ->label('CPF / CNPJ')
-                        ->placeholder('000.000.000-00 ou 00.000.000/0000-00')
-                        ->nullable()
-                        ->extraInputAttributes([
-                            'x-mask:dynamic' => '$input.length > 14 ? "99.999.999/9999-99" : "999.999.999-99"',
-                        ]),
+                        ->label(fn ($get) => $get('person_type') === 'PJ' ? 'CNPJ' : 'CPF')
+                        ->placeholder(fn ($get) => $get('person_type') === 'PJ' ? '00.000.000/0000-00' : '000.000.000-00')
+                        ->mask(fn ($get) => $get('person_type') === 'PJ' ? '99.999.999/9999-99' : '999.999.999-99')
+                        ->nullable(),
 
                     Select::make('product_id')
                         ->label('Ramo / Produto de Interesse')

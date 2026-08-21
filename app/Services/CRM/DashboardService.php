@@ -108,8 +108,10 @@ class DashboardService
             ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
             ->where(function ($q) {
                 $q->where('status', PolicyStatusEnum::Active->value)
-                  ->orWhere('status', 'active');
+                  ->orWhere('status', 'active')
+                  ->orWhere('status', 'Ativa');
             })
+            ->whereNotNull('end_date')
             ->whereBetween('end_date', [now()->startOfDay(), now()->addDays($days)->endOfDay()])
             ->orderBy('end_date', 'asc')
             ->limit($limit)
@@ -127,8 +129,10 @@ class DashboardService
             ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
             ->where(function ($q) {
                 $q->where('status', PolicyStatusEnum::Active->value)
-                  ->orWhere('status', 'active');
+                  ->orWhere('status', 'active')
+                  ->orWhere('status', 'Ativa');
             })
+            ->whereNotNull('end_date')
             ->whereBetween('end_date', [now()->startOfDay(), now()->addDays($days)->endOfDay()])
             ->count();
     }

@@ -41,6 +41,7 @@ Para executar testes de um arquivo ou módulo específico:
 | Arquivo de Teste | Módulos & Funcionalidades Validadas |
 | :--- | :--- |
 | [`BrokerEvolutionModulesTest.php`](file:///home/jebrito/insurance-platform/tests/Feature/BrokerEvolutionModulesTest.php) | Esteira de Renovações (Kanban + 1-clique), Registro de Perda, Cotações Multi-Seguradoras, Conversão em Apólice, Upload/Delete no GED, Alertas do Corretor. |
+| [`RenewalsPipelineTest.php`](file:///home/jebrito/insurance-platform/tests/Feature/RenewalsPipelineTest.php) | Filtros de Renovações Próximas (30 dias), Mutators de conversão BRL em decimais, Máscaras e Validação. |
 | [`PolicyDocumentTest.php`](file:///home/jebrito/insurance-platform/tests/Feature/PolicyDocumentTest.php) | Visualização HTML de Apólice, Geração e Streaming de PDF DomPDF, Download de Arquivo. |
 | [`FinancialModuleTest.php`](file:///home/jebrito/insurance-platform/tests/Feature/FinancialModuleTest.php) | IOF por Ramo, Geração da Grade de Parcelas com ajuste de centavos, Liquidação e Baixa de Comissões. |
 | [`GlobalSearchTest.php`](file:///home/jebrito/insurance-platform/tests/Feature/GlobalSearchTest.php) | Busca multidomínio (Leads, Segurados, Apólices, Sinistros), Reconhecimento de CPF/CNPJ com ou sem máscara, Caracteres especiais. |
