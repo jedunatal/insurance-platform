@@ -19,6 +19,10 @@
         {{ $this->infolist }}
     </x-card>
 
+    <x-card class="p-6 dark:!bg-[#1F2937] dark:!border-gray-700">
+        <livewire:ged.attachment-manager :model="$record" :key="'ged-claim-'.$record->id" />
+    </x-card>
+
     <x-filament-actions::modals />
 
 </div>

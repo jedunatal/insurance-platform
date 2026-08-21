@@ -88,6 +88,16 @@ class Lead extends Model
         return $this->belongsTo(User::class, 'created_by'); // Indica o usuário criador do registro
     }
 
+    public function quotes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Quote::class);
+    }
+
+    public function attachments(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Escopos de Consulta (Query Scopes)

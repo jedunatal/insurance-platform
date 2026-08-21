@@ -125,6 +125,9 @@
                 </div>
 
                 <div class="flex items-center gap-3">
+                    {{-- Central de Alertas e Notificações --}}
+                    <livewire:layout.notification-bell />
+
                     {{-- Botão de Alternar Tema (Claro/Escuro) --}}
                     <button type="button" @click="toggleTheme()" class="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition" title="Alternar Tema">
                         <svg x-show="isDark" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2.25m0 13.5V21M4.313 4.313l1.591 1.591M16.5 16.5l1.591 1.591M21 12h-2.25m-13.5 0H3m16.5-7.687l-1.591 1.591M6.719 17.281l-1.591 1.591M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>

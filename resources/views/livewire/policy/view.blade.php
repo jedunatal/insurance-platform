@@ -4,6 +4,10 @@
     <div class="mt-6 bg-white dark:bg-gray-900 shadow-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
         {{ $this->infolist }}
 
+        <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <livewire:ged.attachment-manager :model="$record" :key="'ged-policy-'.$record->id" />
+        </div>
+
         <div class="mt-6 flex flex-wrap items-center justify-end gap-3">
             <a href="{{ route('policies.index') }}" class="px-4 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition">Voltar</a>
             

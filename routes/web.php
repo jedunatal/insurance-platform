@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\PolicyDocumentController;
+use App\Http\Controllers\QuoteDocumentController;
 use App\Livewire\Claim;
 use App\Livewire\Dashboard;
 use App\Livewire\Financial;
 use App\Livewire\Insured;
 use App\Livewire\Lead;
 use App\Livewire\Policy;
+use App\Livewire\Quote;
+use App\Livewire\Renewal;
 use Illuminate\Support\Facades\Route;
 
 // Dashboard Principal
@@ -18,6 +21,15 @@ Route::prefix('leads')->name('leads.')->group(function () {
     Route::get('/create', Lead\Create::class)->name('create');
     Route::get('/{record}', Lead\View::class)->name('view');
     Route::get('/{record}/edit', Lead\Edit::class)->name('edit');
+});
+
+// Cotações & Comparativo Multi-Seguradoras (Quotes)
+Route::prefix('quotes')->name('quotes.')->group(function () {
+    Route::get('/', Quote\ListAll::class)->name('index');
+    Route::get('/create', Quote\Create::class)->name('create');
+    Route::get('/{quote}/document', [QuoteDocumentController::class, 'show'])->name('document.view');
+    Route::get('/{quote}/document/download', [QuoteDocumentController::class, 'downloadPdf'])->name('document.download');
+    Route::get('/{record}', Quote\View::class)->name('view');
 });
 
 // Segurados (Insureds)
@@ -37,6 +49,11 @@ Route::prefix('policies')->name('policies.')->group(function () {
     Route::get('/{policy}/document/download', [PolicyDocumentController::class, 'downloadPdf'])->name('document.download');
     Route::get('/{record}', Policy\View::class)->name('view');
     Route::get('/{record}/edit', Policy\Edit::class)->name('edit');
+});
+
+// Esteira de Renovações (Renewals)
+Route::prefix('renewals')->name('renewals.')->group(function () {
+    Route::get('/', Renewal\Pipeline::class)->name('index');
 });
 
 // Sinistros (Claims)

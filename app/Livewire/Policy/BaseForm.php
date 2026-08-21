@@ -8,6 +8,7 @@ use App\Enums\PaymentMethodEnum;
 use App\Enums\PolicyStatusEnum;
 use App\Models\Insured;
 use App\Models\Policy;
+use App\Models\User;
 use App\Services\Insurance\PolicyService;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
@@ -79,7 +80,11 @@ class BaseForm
                                             $set('total_premium', round($net + $iof, 2));
 
                                             $commRate = (float) ($get('commission_percentage') ?? 0);
-                                            $set('commission_amount', round($net * ($commRate / 100), 2));
+                                            $commAmount = round($net * ($commRate / 100), 2);
+                                            $set('commission_amount', $commAmount);
+
+                                            $producerRate = (float) ($get('producer_commission_percentage') ?? 0);
+                                            $set('producer_commission_amount', round($commAmount * ($producerRate / 100), 2));
                                         }
                                     }
                                 })
@@ -146,7 +151,133 @@ class BaseForm
                         ->columns(12)
                         ->columnSpan(12),
 
-                    // 3. Valores, Tributos, Comissões e Pagamento
+                    // 3. Dados Específicos por Ramo de Seguro (Automóvel, Imóvel ou Vida)
+                    Section::make('Dados do Veículo (Automóvel)')
+                        ->description('Preencha os detalhes técnicos do veículo para apólices do ramo Auto.')
+                        ->schema([
+                            Grid::make(12)->schema([
+                                TextInput::make('vehicle_data.plate')
+                                    ->label('Placa do Veículo')
+                                    ->placeholder('Ex: ABC-1D23')
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                TextInput::make('vehicle_data.fipe_code')
+                                    ->label('Código FIPE')
+                                    ->placeholder('Ex: 005389-9')
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                TextInput::make('vehicle_data.brand')
+                                    ->label('Marca / Montadora')
+                                    ->placeholder('Ex: Toyota, Honda, VW')
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                TextInput::make('vehicle_data.model')
+                                    ->label('Modelo / Versão')
+                                    ->placeholder('Ex: Corolla XEi 2.0 Flex')
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                TextInput::make('vehicle_data.model_year')
+                                    ->label('Ano Fab / Modelo')
+                                    ->placeholder('Ex: 2024/2025')
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                TextInput::make('vehicle_data.chassis')
+                                    ->label('Chassi')
+                                    ->placeholder('Ex: 9BWCA05Z89P000000')
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                TextInput::make('vehicle_data.overnight_zip_code')
+                                    ->label('CEP de Pernoite')
+                                    ->placeholder('Ex: 01310-100')
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                TextInput::make('vehicle_data.main_driver')
+                                    ->label('Condutor Principal')
+                                    ->placeholder('Ex: João da Silva (Titular)')
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+                            ]),
+                        ])
+                        ->collapsible()
+                        ->columnSpan(12),
+
+                    Section::make('Dados do Imóvel / Risco (Residencial / Empresarial)')
+                        ->description('Informações sobre a localidade e características estruturais do imóvel segurado.')
+                        ->schema([
+                            Grid::make(12)->schema([
+                                Select::make('property_data.property_type')
+                                    ->label('Tipo de Imóvel')
+                                    ->options([
+                                        'casa'        => 'Casa / Sobrado',
+                                        'apartamento' => 'Apartamento',
+                                        'comercial'   => 'Sala Comercial / Galpão',
+                                        'industrial'  => 'Galpão Industrial',
+                                    ])
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                TextInput::make('property_data.risk_zip_code')
+                                    ->label('CEP do Risco')
+                                    ->placeholder('Ex: 04538-133')
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                Select::make('property_data.construction_type')
+                                    ->label('Tipo de Construção')
+                                    ->options([
+                                        'alvenaria' => 'Alvenaria Superior',
+                                        'madeira'   => 'Madeira / Mista',
+                                    ])
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                Select::make('property_data.has_alarm')
+                                    ->label('Alarme / Monitoramento')
+                                    ->options([
+                                        'sim' => 'Sim (Monitorado 24h)',
+                                        'nao' => 'Não possui',
+                                    ])
+                                    ->columnSpan(['default' => 12, 'md' => 3]),
+                            ]),
+                        ])
+                        ->collapsible()
+                        ->columnSpan(12),
+
+                    Section::make('Quadro de Beneficiários (Vida & Acidentes Pessoais)')
+                        ->description('Indicação expressa de beneficiários e respectiva partilha percentual.')
+                        ->schema([
+                            Repeater::make('beneficiaries')
+                                ->label('Beneficiários Cadastrados')
+                                ->schema([
+                                    TextInput::make('name')
+                                        ->label('Nome Completo')
+                                        ->placeholder('Ex: Maria Silva')
+                                        ->required()
+                                        ->columnSpan(['default' => 12, 'md' => 4]),
+
+                                    TextInput::make('relationship')
+                                        ->label('Parentesco')
+                                        ->placeholder('Ex: Cônjuge, Filho(a)')
+                                        ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                    TextInput::make('document')
+                                        ->label('CPF')
+                                        ->placeholder('Ex: 000.000.000-00')
+                                        ->columnSpan(['default' => 12, 'md' => 3]),
+
+                                    TextInput::make('share_percentage')
+                                        ->label('Participação (%)')
+                                        ->suffix('%')
+                                        ->numeric()
+                                        ->default(100)
+                                        ->columnSpan(['default' => 12, 'md' => 2]),
+                                ])
+                                ->columns(12)
+                                ->defaultItems(0)
+                                ->addActionLabel('+ Adicionar Beneficiário')
+                                ->collapsible()
+                                ->columnSpanFull(),
+                        ])
+                        ->collapsible()
+                        ->columnSpan(12),
+
+                    // 4. Valores, Tributos, Comissões e Pagamento
                     Section::make('Valores e Condições de Pagamento')
                         ->schema([
                             TextInput::make('net_premium')
@@ -166,6 +297,9 @@ class BaseForm
                                     $set('iof_amount', $iof);
                                     $set('total_premium', round($net + $iof, 2));
                                     $set('commission_amount', $comm);
+
+                                    $prodRate = (float) ($get('producer_commission_percentage') ?? 0);
+                                    $set('producer_commission_amount', round($comm * ($prodRate / 100), 2));
                                 })
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
@@ -207,7 +341,7 @@ class BaseForm
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
                             TextInput::make('commission_percentage')
-                                ->label('Comissão do Corretor')
+                                ->label('Comissão da Corretora')
                                 ->numeric()
                                 ->suffix('%')
                                 ->default(0)
@@ -217,6 +351,9 @@ class BaseForm
                                     $commRate = (float) ($state ?? 0);
                                     $comm = round($net * ($commRate / 100), 2);
                                     $set('commission_amount', $comm);
+
+                                    $prodRate = (float) ($get('producer_commission_percentage') ?? 0);
+                                    $set('producer_commission_amount', round($comm * ($prodRate / 100), 2));
                                 })
                                 ->columnSpan(['default' => 12, 'md' => 4]),
 
@@ -254,7 +391,43 @@ class BaseForm
                         ->columns(12)
                         ->columnSpan(12),
 
-                    // 4. Coberturas Flexíveis
+                    // 5. Split de Comissões com Produtor / Parceiro
+                    Section::make('Split de Comissão / Repasse a Produtor (Opcional)')
+                        ->description('Configure o rateio de comissão para corretores parceiros ou produtores comerciais.')
+                        ->schema([
+                            Select::make('producer_id')
+                                ->label('Produtor / Parceiro Comercial')
+                                ->options(fn () => User::pluck('name', 'id'))
+                                ->searchable()
+                                ->nullable()
+                                ->columnSpan(['default' => 12, 'md' => 4]),
+
+                            TextInput::make('producer_commission_percentage')
+                                ->label('Percentual de Repasse (%)')
+                                ->numeric()
+                                ->suffix('%')
+                                ->default(0)
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function ($state, $set, $get) {
+                                    $comm = (float) ($get('commission_amount') ?? 0);
+                                    $prodRate = (float) ($state ?? 0);
+                                    $set('producer_commission_amount', round($comm * ($prodRate / 100), 2));
+                                })
+                                ->columnSpan(['default' => 12, 'md' => 4]),
+
+                            TextInput::make('producer_commission_amount')
+                                ->label('Valor do Repasse ao Produtor')
+                                ->numeric()
+                                ->prefix('R$')
+                                ->default(0)
+                                ->readOnly()
+                                ->columnSpan(['default' => 12, 'md' => 4]),
+                        ])
+                        ->columns(12)
+                        ->collapsible()
+                        ->columnSpan(12),
+
+                    // 6. Coberturas Flexíveis
                     Section::make('Coberturas Contratadas')
                         ->description('Adicione as coberturas, limites máximos de indenização (LMI) e franquias específicas.')
                         ->schema([
@@ -285,7 +458,7 @@ class BaseForm
                         ])
                         ->columnSpan(12),
 
-                    // 5. Anotações
+                    // 7. Anotações
                     Section::make('Anotações Gerais')
                         ->schema([
                             Textarea::make('notes')

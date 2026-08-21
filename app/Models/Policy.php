@@ -4,12 +4,15 @@ namespace App\Models;
 
 use App\Enums\PolicyPaymentMethodEnum;
 use App\Enums\PolicyStatusEnum;
+use App\Enums\RenewalStageEnum;
 use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 
@@ -22,8 +25,10 @@ class Policy extends Model
     protected $fillable = [
         'tenant_id',
         'insured_id',
+        'previous_policy_id',
         'product_id',
         'broker_id',
+        'producer_id',
         'created_by',
         'policy_number',
         'proposal_number',
@@ -33,9 +38,13 @@ class Policy extends Model
         'susep_process',
         'ci_code',
         'status',
+        'renewal_status',
         'start_date',
         'end_date',
         'insured_object',
+        'vehicle_data',
+        'property_data',
+        'beneficiaries',
         'coverages',
         'net_premium',
         'iof_rate',
@@ -43,6 +52,8 @@ class Policy extends Model
         'total_premium',
         'commission_percentage',
         'commission_amount',
+        'producer_commission_percentage',
+        'producer_commission_amount',
         'deductible_amount',
         'payment_method',
         'installments_count',
@@ -53,21 +64,27 @@ class Policy extends Model
     protected function casts(): array
     {
         return [
-            'start_date'            => 'datetime',
-            'end_date'              => 'datetime',
-            'insured_object'        => 'array',
-            'coverages'             => 'array',
-            'installments_schedule' => 'array',
-            'net_premium'           => 'decimal:2',
-            'iof_rate'              => 'decimal:2',
-            'iof_amount'            => 'decimal:2',
-            'total_premium'         => 'decimal:2',
-            'commission_percentage' => 'decimal:2',
-            'commission_amount'     => 'decimal:2',
-            'deductible_amount'     => 'decimal:2',
-            'installments_count'    => 'integer',
-            'status'                => PolicyStatusEnum::class,
-            'payment_method'        => PolicyPaymentMethodEnum::class,
+            'start_date'                     => 'datetime',
+            'end_date'                       => 'datetime',
+            'insured_object'                 => 'array',
+            'vehicle_data'                   => 'array',
+            'property_data'                  => 'array',
+            'beneficiaries'                  => 'array',
+            'coverages'                      => 'array',
+            'installments_schedule'          => 'array',
+            'net_premium'                    => 'decimal:2',
+            'iof_rate'                       => 'decimal:2',
+            'iof_amount'                     => 'decimal:2',
+            'total_premium'                  => 'decimal:2',
+            'commission_percentage'          => 'decimal:2',
+            'commission_amount'              => 'decimal:2',
+            'producer_commission_percentage' => 'decimal:2',
+            'producer_commission_amount'     => 'decimal:2',
+            'deductible_amount'              => 'decimal:2',
+            'installments_count'             => 'integer',
+            'status'                         => PolicyStatusEnum::class,
+            'renewal_status'                 => RenewalStageEnum::class,
+            'payment_method'                 => PolicyPaymentMethodEnum::class,
         ];
     }
 
@@ -87,6 +104,21 @@ class Policy extends Model
         return $this->belongsTo(Insured::class);
     }
 
+    public function previousPolicy(): BelongsTo
+    {
+        return $this->belongsTo(Policy::class, 'previous_policy_id');
+    }
+
+    public function renewedPolicies(): HasMany
+    {
+        return $this->hasMany(Policy::class, 'previous_policy_id');
+    }
+
+    public function renewal(): HasOne
+    {
+        return $this->hasOne(PolicyRenewal::class, 'policy_id');
+    }
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
@@ -95,6 +127,11 @@ class Policy extends Model
     public function broker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'broker_id');
+    }
+
+    public function producer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'producer_id');
     }
 
     public function createdBy(): BelongsTo
@@ -110,6 +147,11 @@ class Policy extends Model
     public function installments(): HasMany
     {
         return $this->hasMany(PolicyInstallment::class)->orderBy('installment_number');
+    }
+
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
     }
 
     /*
@@ -258,6 +300,21 @@ class Policy extends Model
      */
     public function insuredObjectSummary(): string
     {
+        if (! empty($this->vehicle_data) && is_array($this->vehicle_data)) {
+            $brand = Arr::get($this->vehicle_data, 'brand') ?? Arr::get($this->vehicle_data, 'marca');
+            $model = Arr::get($this->vehicle_data, 'model') ?? Arr::get($this->vehicle_data, 'modelo');
+            $plate = Arr::get($this->vehicle_data, 'plate') ?? Arr::get($this->vehicle_data, 'placa');
+
+            return trim("{$brand} {$model} " . ($plate ? "[{$plate}]" : ''));
+        }
+
+        if (! empty($this->property_data) && is_array($this->property_data)) {
+            $type = Arr::get($this->property_data, 'property_type') ?? Arr::get($this->property_data, 'tipo_imovel');
+            $city = Arr::get($this->property_data, 'city') ?? Arr::get($this->property_data, 'cidade');
+
+            return trim("{$type} em {$city}");
+        }
+
         if (! is_array($this->insured_object) || blank($this->insured_object)) {
             return '-';
         }

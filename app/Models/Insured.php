@@ -87,6 +87,21 @@ class Insured extends Model
         return $this->hasMany(Claim::class);
     }
 
+    public function quotes(): HasMany
+    {
+        return $this->hasMany(Quote::class);
+    }
+
+    public function renewals(): HasMany
+    {
+        return $this->hasMany(PolicyRenewal::class);
+    }
+
+    public function attachments(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Escopos de Consulta (Query Scopes)
