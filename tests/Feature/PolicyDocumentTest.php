@@ -62,6 +62,8 @@ class PolicyDocumentTest extends TestCase
 
         app(GeneratePolicyInstallmentsAction::class)->execute($policy);
 
+        $this->authenticateUser($tenant);
+
         return $policy->fresh();
     }
 

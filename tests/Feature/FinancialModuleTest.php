@@ -185,6 +185,8 @@ class FinancialModuleTest extends TestCase
 
     public function test_financial_list_page_returns_http_200_and_renders_livewire_table(): void
     {
+        $this->authenticateUser();
+
         $response = $this->get(route('financial.index'));
         $response->assertStatus(200);
         $response->assertSee('Gestão Financeira & Comissões');

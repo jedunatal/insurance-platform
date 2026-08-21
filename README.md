@@ -9,7 +9,7 @@
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Filament](https://img.shields.io/badge/Filament_Components-F2994A?style=for-the-badge)
 ![Docker](https://img.shields.io/badge/Docker_Sail-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-38_Passed-success?style=for-the-badge)
+![Tests](https://img.shields.io/badge/Tests-46_Passed-success?style=for-the-badge)
 
 ---
 

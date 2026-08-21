@@ -14,52 +14,63 @@ class InsurancePlatformRoutesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_all_platform_routes_are_accessible(): void
+    public function test_guests_are_redirected_to_login_on_protected_routes(): void
+    {
+        $this->get(route('dashboard'))->assertRedirect(route('login'));
+        $this->get(route('leads.index'))->assertRedirect(route('login'));
+        $this->get(route('policies.index'))->assertRedirect(route('login'));
+        $this->get(route('insureds.index'))->assertRedirect(route('login'));
+        $this->get(route('claims.index'))->assertRedirect(route('login'));
+    }
+
+    public function test_all_platform_routes_are_accessible_for_authenticated_users(): void
     {
         $tenant = Tenant::create([
-            'name' => 'Empresa Padrão',
-            'slug' => 'empresa-padrao',
-            'email' => 'contato@empresa.com',
+            'name'     => 'Empresa Padrão',
+            'slug'     => 'empresa-padrao',
+            'email'    => 'contato@empresa.com',
             'document' => '00000000000191',
         ]);
 
+        $this->authenticateUser($tenant);
+
         $lead = Lead::create([
             'tenant_id' => $tenant->id,
-            'name' => 'Lead de Teste',
-            'email' => 'lead@teste.com',
-            'phone' => '11999998888',
+            'name'      => 'Lead de Teste',
+            'email'     => 'lead@teste.com',
+            'phone'     => '11999998888',
         ]);
 
         $insured = Insured::create([
             'tenant_id' => $tenant->id,
-            'lead_id' => $lead->id,
-            'name' => 'Segurado de Teste',
-            'email' => 'segurado@teste.com',
-            'phone' => '11999998888',
-            'document' => '12345678901',
+            'lead_id'   => $lead->id,
+            'name'      => 'Segurado de Teste',
+            'email'     => 'segurado@teste.com',
+            'phone'     => '11999998888',
+            'document'  => '12345678901',
         ]);
 
         $policy = Policy::create([
-            'tenant_id' => $tenant->id,
-            'insured_id' => $insured->id,
+            'tenant_id'     => $tenant->id,
+            'insured_id'    => $insured->id,
             'policy_number' => 'POL-TEST-001',
-            'insurer' => 'Porto Seguro',
-            'branch' => 'Automóvel',
-            'status' => 'active',
-            'start_date' => now(),
-            'end_date' => now()->addYear(),
+            'insurer'       => 'Porto Seguro',
+            'branch'        => 'Automóvel',
+            'status'        => 'active',
+            'start_date'    => now(),
+            'end_date'      => now()->addYear(),
             'total_premium' => 2500.00,
         ]);
 
         $claim = Claim::create([
-            'tenant_id' => $tenant->id,
-            'policy_id' => $policy->id,
-            'insured_id' => $insured->id,
-            'claim_number' => 'SIN-TEST-001',
-            'occurrence_date' => now()->subDays(2),
-            'report_date' => now(),
+            'tenant_id'              => $tenant->id,
+            'policy_id'              => $policy->id,
+            'insured_id'             => $insured->id,
+            'claim_number'           => 'SIN-TEST-001',
+            'occurrence_date'        => now()->subDays(2),
+            'report_date'            => now(),
             'occurrence_description' => 'Sinistro teste',
-            'status' => 'reported',
+            'status'                 => 'reported',
         ]);
 
         // Dashboard

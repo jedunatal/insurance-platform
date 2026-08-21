@@ -202,6 +202,8 @@ class DashboardTest extends TestCase
 
     public function test_dashboard_route_returns_http_200_and_renders_livewire_component(): void
     {
+        $this->authenticateUser();
+
         $response = $this->get(route('dashboard'));
         $response->assertStatus(200);
         $response->assertSee('Dashboard Executivo');

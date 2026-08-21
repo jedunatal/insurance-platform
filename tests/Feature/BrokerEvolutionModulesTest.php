@@ -220,6 +220,8 @@ class BrokerEvolutionModulesTest extends TestCase
 
     public function test_livewire_renewal_and_quote_pages_render_correctly(): void
     {
+        $this->authenticateUser();
+
         $responseRenewals = $this->get(route('renewals.index'));
         $responseRenewals->assertStatus(200);
         $responseRenewals->assertSee('Esteira de Renovações');

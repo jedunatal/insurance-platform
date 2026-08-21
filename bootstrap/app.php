@@ -3,31 +3,17 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-        then: function () {
-            Route::middleware('web')
-                ->group(base_path('routes/leads.php'));
-
-            Route::middleware('web')
-                ->group(base_path('routes/insureds.php'));
-
-            Route::middleware('web')
-                ->group(base_path('routes/policies.php'));
-            
-            Route::middleware('web')
-                ->group(base_path('routes/claims.php'));
-            Route::middleware('web')
-                ->group(base_path('routes/dashboards.php'));
-        },
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Redirecionamento automático de usuários não autenticados para /login
+        $middleware->redirectGuestsTo(fn () => route('login'));
+        $middleware->redirectUsersTo(fn () => route('dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

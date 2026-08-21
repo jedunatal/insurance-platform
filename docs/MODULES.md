@@ -83,10 +83,14 @@ Este documento detalha o funcionamento, regras de negócio e telas de cada módu
 
 ---
 
-## 8. Gestão Eletrônica de Documentos (`GED / Attachments`)
-* **Objetivo:** Guarda e organização de arquivos digitais vinculados a qualquer registro do sistema.
-* **Categorias:** CNH, CRLV, Apólice da Seguradora, Laudo de Vistoria, B.O., Fotos de Avarias, Orçamentos e Comprovantes.
-* Visualização rápida em tela cheia e download direto.
+## 8. Gestão Segura de Documentos Sensíveis (`Documents / LGPD`)
+* **Objetivo:** Guarda de arquivos confidenciais de proponentes e sinistros com conformidade LGPD e isolamento multi-tenant.
+* **Armazenamento Privado:** Arquivos gravados no disco `private` (`storage/app/private/documents/{tenant_id}/...`), inacessíveis via URL pública direta.
+* **Categorias Específicas (`DocumentCategoryEnum`):** CNH/Habilitação, RG/Identidade, Comprovante de Residência, Cartão CNPJ, Proposta Assinada, Apólice/Condições Gerais, Boletim de Ocorrência (BO), Fotos dos Danos, Orçamento da Oficina e Laudo Médico.
+* **Ações Seguras:**
+  * **Preview / Stream Inline (`GET /documents/{id}/preview`):** Visualização controlada com headers de segurança (`X-Content-Type-Options: nosniff`).
+  * **Download Seguro (`GET /documents/{id}/download`):** Download com nome original preservado e taxa de requisições limitada (`throttle:30,1`).
+  * **Exclusão Segura (`DELETE /documents/{id}`):** Remoção física do storage privado e soft delete do registro.
 
 ---
 

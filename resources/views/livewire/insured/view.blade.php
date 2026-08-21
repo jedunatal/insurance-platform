@@ -21,7 +21,7 @@
     </x-card>
 
     <x-card class="p-6 dark:!bg-[#1F2937] dark:!border-gray-700">
-        <livewire:ged.attachment-manager :model="$record" :key="'ged-insured-'.$record->id" />
+        <livewire:document.document-manager :model="$record" :key="'doc-insured-'.$record->id" />
     </x-card>
 
     <x-filament-actions::modals />

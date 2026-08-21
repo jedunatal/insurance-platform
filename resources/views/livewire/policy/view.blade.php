@@ -5,7 +5,7 @@
         {{ $this->infolist }}
 
         <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-            <livewire:ged.attachment-manager :model="$record" :key="'ged-policy-'.$record->id" />
+            <livewire:document.document-manager :model="$record" :key="'doc-policy-'.$record->id" />
         </div>
 
         <div class="mt-6 flex flex-wrap items-center justify-end gap-3">

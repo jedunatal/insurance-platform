@@ -102,6 +102,11 @@ class Insured extends Model
         return $this->morphMany(Attachment::class, 'attachable');
     }
 
+    public function documents(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Escopos de Consulta (Query Scopes)
