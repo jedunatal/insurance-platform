@@ -6,6 +6,8 @@ use App\Enums\LeadStatusEnum;
 use App\Models\Insured;
 use App\Models\Lead;
 use App\Models\Tenant;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -91,7 +93,7 @@ class BaseForm
                                 ->required()
                                 ->columnSpan(['default' => 12, 'md' => 5]),
 
-                            \Filament\Forms\Components\DatePicker::make('birth_date')
+                            DatePicker::make('birth_date')
                                 ->label(fn ($get) => $get('person_type') === 'PJ' ? 'Data de Fundação' : 'Data de Nascimento')
                                 ->native(false)
                                 ->displayFormat('d/m/Y')
@@ -169,7 +171,49 @@ class BaseForm
                         ->columns(12)
                         ->columnSpan(12),
 
-                    // 4. Observações
+                    // 4. Documentos Cadastrais e Comprovantes (Upload Seguro LGPD)
+                    Section::make('Documentos e Comprovantes (Upload Seguro LGPD)')
+                        ->extraAttributes(['class' => 'relative z-5 overflow-visible'])
+                        ->description('Anexe documentos de identificação, comprovante de residência e cartão CNPJ/CPF no storage privado.')
+                        ->schema([
+                            FileUpload::make('cnh_or_rg_path')
+                                ->label('Documento de Identificação (RG ou CNH)')
+                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                                ->maxSize(10240)
+                                ->disk('private')
+                                ->directory('insureds/identification')
+                                ->downloadable()
+                                ->previewable()
+                                ->openable()
+                                ->columnSpan(['default' => 12, 'md' => 4]),
+
+                            FileUpload::make('cpf_cnpj_doc_path')
+                                ->label('Comprovante de CPF / Cartão CNPJ')
+                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                                ->maxSize(10240)
+                                ->disk('private')
+                                ->directory('insureds/tax_documents')
+                                ->downloadable()
+                                ->previewable()
+                                ->openable()
+                                ->columnSpan(['default' => 12, 'md' => 4]),
+
+                            FileUpload::make('residence_proof_path')
+                                ->label('Comprovante de Residência Recente (Últimos 90 dias)')
+                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                                ->maxSize(10240)
+                                ->disk('private')
+                                ->directory('insureds/residence_proofs')
+                                ->downloadable()
+                                ->previewable()
+                                ->openable()
+                                ->columnSpan(['default' => 12, 'md' => 4]),
+                        ])
+                        ->columns(12)
+                        ->collapsible()
+                        ->columnSpan(12),
+
+                    // 5. Observações
                     Section::make('Anotações Adicionais')
                         ->extraAttributes(['class' => 'relative z-1 overflow-visible'])
                         ->schema([

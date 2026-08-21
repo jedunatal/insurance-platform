@@ -25,6 +25,9 @@ final readonly class InsuredDTO
         public ?string $city = null,
         public ?string $state = null,
         public ?string $notes = null,
+        public ?string $cnhOrRgPath = null,
+        public ?string $cpfCnpjDocPath = null,
+        public ?string $residenceProofPath = null,
     ) {
     }
 
@@ -81,6 +84,12 @@ final readonly class InsuredDTO
             state: self::nullableString($data['state'] ?? null),
 
             notes: self::nullableString($data['notes'] ?? null),
+
+            cnhOrRgPath: self::nullableString($data['cnh_or_rg_path'] ?? null),
+
+            cpfCnpjDocPath: self::nullableString($data['cpf_cnpj_doc_path'] ?? null),
+
+            residenceProofPath: self::nullableString($data['residence_proof_path'] ?? null),
         );
     }
 
@@ -100,24 +109,27 @@ final readonly class InsuredDTO
     public function toArray(): array
     {
         return [
-            'tenant_id'    => $this->tenantId,
-            'lead_id'      => $this->leadId,
-            'assigned_to'  => $this->assignedTo,
-            'created_by'   => $this->createdBy,
-            'name'         => $this->name,
-            'email'        => $this->email,
-            'phone'        => $this->phone,
-            'document'     => $this->document,
-            'person_type'  => $this->personType?->value,
-            'birth_date'   => $this->birthDate,
-            'zip_code'     => $this->zipCode,
-            'address'      => $this->address,
-            'number'       => $this->number,
-            'complement'   => $this->complement,
-            'neighborhood' => $this->neighborhood,
-            'city'         => $this->city,
-            'state'        => $this->state,
-            'notes'        => $this->notes,
+            'tenant_id'            => $this->tenantId,
+            'lead_id'              => $this->leadId,
+            'assigned_to'          => $this->assignedTo,
+            'created_by'           => $this->createdBy,
+            'name'                 => $this->name,
+            'email'                => $this->email,
+            'phone'                => $this->phone,
+            'document'             => $this->document,
+            'person_type'          => $this->personType?->value,
+            'birth_date'           => $this->birthDate,
+            'zip_code'             => $this->zipCode,
+            'address'              => $this->address,
+            'number'               => $this->number,
+            'complement'           => $this->complement,
+            'neighborhood'         => $this->neighborhood,
+            'city'                 => $this->city,
+            'state'                => $this->state,
+            'notes'                => $this->notes,
+            'cnh_or_rg_path'       => $this->cnhOrRgPath,
+            'cpf_cnpj_doc_path'    => $this->cpfCnpjDocPath,
+            'residence_proof_path' => $this->residenceProofPath,
         ];
     }
 }

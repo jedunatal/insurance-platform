@@ -36,6 +36,9 @@ class Insured extends Model
         'city',
         'state',
         'notes',
+        'cnh_or_rg_path',
+        'cpf_cnpj_doc_path',
+        'residence_proof_path',
     ];
 
     protected function casts(): array

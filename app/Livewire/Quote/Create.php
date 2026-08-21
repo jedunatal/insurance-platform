@@ -41,32 +41,7 @@ class Create extends Component implements HasForms, HasActions
             'branch'      => InsuranceBranchEnum::Auto->value,
             'status'      => QuoteStatusEnum::Draft->value,
             'valid_until' => now()->addDays(15)->toDateString(),
-            'options'     => [
-                [
-                    'insurer'           => 'Porto Seguro',
-                    'net_premium'       => 2800.00,
-                    'iof_amount'        => 206.64,
-                    'total_premium'     => 3006.64,
-                    'deductible_type'   => 'normal',
-                    'deductible_amount' => 2500.00,
-                    'car_rental'        => '15 dias (Carro Médio)',
-                    'glass_coverage'    => 'Completa com retrovisores e faróis',
-                    'is_recommended'    => true,
-                    'highlights'        => 'Guincho sem limite de KM, desconto em estacionamentos parceiros.',
-                ],
-                [
-                    'insurer'           => 'Allianz Seguros',
-                    'net_premium'       => 2600.00,
-                    'iof_amount'        => 191.88,
-                    'total_premium'     => 2791.88,
-                    'deductible_type'   => 'reduzida',
-                    'deductible_amount' => 1800.00,
-                    'car_rental'        => '7 dias (Carro Básico)',
-                    'glass_coverage'    => 'Básica',
-                    'is_recommended'    => false,
-                    'highlights'        => 'Melhor preço em cobertura de terceiros.',
-                ],
-            ],
+            'options'     => [], // Inicia vazio para o corretor adicionar as opções reais via Repeater
         ]);
     }
 
@@ -164,8 +139,7 @@ class Create extends Component implements HasForms, HasActions
                                     ->placeholder('Ex: Guincho ilimitado, cobertura de vidros sem franquia...')
                                     ->columnSpanFull(),
                             ])
-                            ->minItems(1)
-                            ->defaultItems(2)
+                            ->defaultItems(0)
                             ->addActionLabel('Adicionar Opção de Seguradora'),
                     ]),
             ]);
