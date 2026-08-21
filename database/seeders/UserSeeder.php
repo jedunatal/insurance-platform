@@ -48,7 +48,7 @@ class UserSeeder extends Seeder
             ['email' => 'corretor@corretora.com'],
             [
                 'tenant_id' => $tenant->id,
-                'name'      => 'Carlos Henrique (Corretor Gestor)',
+                'name'      => 'Gestor (Gestor Principal)',
                 'password'  => Hash::make('password'),
             ]
         );

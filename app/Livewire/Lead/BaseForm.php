@@ -29,14 +29,14 @@ class BaseForm
                 ->schema([
                     TextInput::make('name')
                         ->label('Nome do Cliente')
-                        ->placeholder('Ex: Carlos Henrique Ramos')
+                        ->placeholder('Ex: João Bastos da Silva')
                         ->required()
                         ->columnSpanFull(),
 
                     TextInput::make('email')
                         ->label('E-mail')
                         ->email()
-                        ->placeholder('carlos@email.com')
+                        ->placeholder('nome@email.com')
                         ->required(),
 
                     TextInput::make('phone')
