@@ -3,86 +3,122 @@
 namespace Tests\Unit\Policies;
 
 use App\Models\Lead;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Policies\LeadPolicy;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 class LeadPolicyTest extends TestCase
 {
+    use RefreshDatabase;
+
     private LeadPolicy $policy;
+    private Tenant $tenant1;
+    private Tenant $tenant2;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->policy = new LeadPolicy();
+
+        Permission::firstOrCreate(['name' => 'view leads', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'create leads', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'update leads', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'delete leads', 'guard_name' => 'web']);
+
+        $this->tenant1 = Tenant::create([
+            'name' => 'Corretora 1',
+            'slug' => 'corretora-lead-1',
+            'email' => 'cl1@test.com',
+            'document' => '11111111000111',
+        ]);
+
+        $this->tenant2 = Tenant::create([
+            'name' => 'Corretora 2',
+            'slug' => 'corretora-lead-2',
+            'email' => 'cl2@test.com',
+            'document' => '22222222000122',
+        ]);
     }
 
-    private function createUserWithPermission(int $tenantId, string $permission, bool $hasPermission = true): User
+    private function createUser(Tenant $tenant, array $permissions = []): User
     {
-        /** @var User&\PHPUnit\Framework\MockObject\MockObject $user */
-        $user = $this->getMockBuilder(User::class)
-            ->onlyMethods(['checkPermissionTo'])
-            ->getMock();
+        $user = User::create([
+            'tenant_id' => $tenant->id,
+            'name' => 'User ' . uniqid(),
+            'email' => uniqid() . '@test.com',
+            'password' => bcrypt('secret'),
+        ]);
 
-        $user->tenant_id = $tenantId;
-        $user->method('checkPermissionTo')
-            ->with($permission)
-            ->willReturn($hasPermission);
+        if (! empty($permissions)) {
+            $user->givePermissionTo($permissions);
+        }
 
         return $user;
     }
 
     public function test_view_any(): void
     {
-        $userAllowed = $this->createUserWithPermission(1, 'view leads', true);
+        $userAllowed = $this->createUser($this->tenant1, ['view leads']);
         $this->assertTrue($this->policy->viewAny($userAllowed));
 
-        $userDenied = $this->createUserWithPermission(1, 'view leads', false);
+        $userDenied = $this->createUser($this->tenant1);
         $this->assertFalse($this->policy->viewAny($userDenied));
     }
 
     public function test_view_requires_same_tenant(): void
     {
         $lead = new Lead();
-        $lead->tenant_id = 1;
+        $lead->tenant_id = $this->tenant1->id;
 
-        $user1 = $this->createUserWithPermission(1, 'view leads', true);
+        $user1 = $this->createUser($this->tenant1, ['view leads']);
         $this->assertTrue($this->policy->view($user1, $lead));
 
-        $user2 = $this->createUserWithPermission(2, 'view leads', true);
+        $user2 = $this->createUser($this->tenant2, ['view leads']);
         $this->assertFalse($this->policy->view($user2, $lead));
+
+        $userNoPerm = $this->createUser($this->tenant1);
+        $this->assertFalse($this->policy->view($userNoPerm, $lead));
     }
 
     public function test_create(): void
     {
-        $user = $this->createUserWithPermission(1, 'create leads', true);
-        $this->assertTrue($this->policy->create($user));
+        $userAllowed = $this->createUser($this->tenant1, ['create leads']);
+        $this->assertTrue($this->policy->create($userAllowed));
 
-        $userNoPerm = $this->createUserWithPermission(1, 'create leads', false);
-        $this->assertFalse($this->policy->create($userNoPerm));
+        $userDenied = $this->createUser($this->tenant1);
+        $this->assertFalse($this->policy->create($userDenied));
     }
 
     public function test_update_requires_same_tenant(): void
     {
         $lead = new Lead();
-        $lead->tenant_id = 10;
+        $lead->tenant_id = $this->tenant1->id;
 
-        $userOk = $this->createUserWithPermission(10, 'update leads', true);
+        $userOk = $this->createUser($this->tenant1, ['update leads']);
         $this->assertTrue($this->policy->update($userOk, $lead));
 
-        $userDifferentTenant = $this->createUserWithPermission(20, 'update leads', true);
-        $this->assertFalse($this->policy->update($userDifferentTenant, $lead));
+        $userDifferent = $this->createUser($this->tenant2, ['update leads']);
+        $this->assertFalse($this->policy->update($userDifferent, $lead));
+
+        $userNoPerm = $this->createUser($this->tenant1);
+        $this->assertFalse($this->policy->update($userNoPerm, $lead));
     }
 
     public function test_delete_requires_same_tenant(): void
     {
         $lead = new Lead();
-        $lead->tenant_id = 15;
+        $lead->tenant_id = $this->tenant1->id;
 
-        $userOk = $this->createUserWithPermission(15, 'delete leads', true);
+        $userOk = $this->createUser($this->tenant1, ['delete leads']);
         $this->assertTrue($this->policy->delete($userOk, $lead));
 
-        $userWrongTenant = $this->createUserWithPermission(30, 'delete leads', true);
-        $this->assertFalse($this->policy->delete($userWrongTenant, $lead));
+        $userWrong = $this->createUser($this->tenant2, ['delete leads']);
+        $this->assertFalse($this->policy->delete($userWrong, $lead));
+
+        $userNoPerm = $this->createUser($this->tenant1);
+        $this->assertFalse($this->policy->delete($userNoPerm, $lead));
     }
 }
