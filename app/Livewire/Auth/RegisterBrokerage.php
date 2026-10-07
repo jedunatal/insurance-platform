@@ -14,7 +14,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 use Spatie\Permission\Models\Role;
 
-#[Title('Cadastrar Corretora | Salut Royale')]
+#[Title('Cadastrar Corretora | Nome Corretora')]
 #[Layout('layouts.auth')]
 class RegisterBrokerage extends Component
 {

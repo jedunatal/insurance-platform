@@ -292,8 +292,8 @@
         <table class="header-table">
             <tr>
                 <td style="width: 50%; vertical-align: middle;">
-                    <div class="brand-logo">SALUT ROYALE</div>
-                    <div class="brand-sub">Salut Royale Corretora de Seguros</div>
+                    <div class="brand-logo">Nome Corretora</div>
+                    <div class="brand-sub">Nome Corretora</div>
                 </td>
                 <td style="width: 50%; vertical-align: middle;">
                     <div class="doc-title">Certificado de Apólice</div>
@@ -531,7 +531,7 @@
         @endphp
         <div class="auth-footer">
             <span>Autenticação Digital: <strong>{{ $shortHash }}</strong></span>
-            <span>Documento emitido em {{ now()->format('d/m/Y \à\s H:i:s') }} via Salut Royale Corretora de Seguros</span>
+            <span>Documento emitido em {{ now()->format('d/m/Y \à\s H:i:s') }} via Nome Corretora</span>
         </div>
 
     </div>

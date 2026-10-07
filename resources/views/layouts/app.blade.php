@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Painel' }} | Salut Royale</title>
+    <title>{{ $title ?? 'Painel' }} | Nome Corretora</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -82,8 +82,8 @@
                     SR
                 </div>
                 <div x-show="!sidebarCollapsed" x-transition class="truncate">
-                    <h1 class="text-xs font-bold text-slate-900 dark:text-white tracking-wider uppercase">SALUT</h1>
-                    <p class="text-[10px] text-[#B99B6C] font-extrabold tracking-widest uppercase">ROYALE</p>
+                    <h1 class="text-xs font-bold text-slate-900 dark:text-white tracking-wider uppercase">NOME CORRETORA</h1>
+                    <p class="text-[10px] text-[#B99B6C] font-extrabold tracking-widest uppercase">CORRETORA DE SEGUROS</p>
                 </div>
             </div>
 
@@ -98,7 +98,7 @@
                     SR
                 </div>
                 <div x-show="!sidebarCollapsed" x-transition class="truncate leading-tight">
-                    <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Salut Royale</p>
+                    <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Nome Corretora</p>
                     <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Corretora de Seguros</p>
                 </div>
             </div>
@@ -216,7 +216,7 @@
                 {{-- 🦶 RODAPÉ (FOOTER) COM SUAS CREDENCIAIS --}}
                 <footer class="pt-8 mt-12 border-t border-slate-200/80 dark:border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 shrink-0">
                     <div class="flex items-center gap-2">
-                        <span class="font-bold text-slate-800 dark:text-slate-200">Salut Royale</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">Nome Corretora</span>
                         <span>&copy; {{ date('Y') }}</span>
                         <span class="hidden sm:inline">&bull;</span>
                         <span class="hidden sm:inline">Todos os direitos reservados.</span>
@@ -244,7 +244,7 @@
                         <div class="w-8 h-8 rounded-xl bg-[#295384] flex items-center justify-center text-[#B99B6C] font-extrabold text-xs shadow-md shrink-0">
                             SR
                         </div>
-                        <span class="text-base font-bold text-slate-900 dark:text-white">Salut Royale</span>
+                        <span class="text-base font-bold text-slate-900 dark:text-white">Nome Corretora</span>
                     </div>
                     <button @click="mobileSidebarOpen = false" class="text-slate-400 hover:text-slate-900 dark:hover:text-white">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>

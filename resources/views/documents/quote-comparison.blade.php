@@ -174,8 +174,8 @@
     <table class="header-table">
         <tr>
             <td style="width: 50%; vertical-align: middle;">
-                <div class="brand-logo">SALUT ROYALE</div>
-                <div class="brand-sub">Salut Royale Corretora de Seguros</div>
+                <div class="brand-logo">Nome Corretora</div>
+                <div class="brand-sub">Nome Corretora</div>
             </td>
             <td style="width: 50%; vertical-align: middle;">
                 <div class="doc-title">Proposta de Seguro</div>
@@ -321,7 +321,7 @@
     </div>
 
     <div style="margin-top: 20px; text-align: center; font-size: 7.5pt; color: #475569;">
-        Documento gerado em {{ now()->format('d/m/Y H:i') }} • Salut Royale Corretora de Seguros
+        Documento gerado em {{ now()->format('d/m/Y H:i') }} • Nome Corretora • Ambiente Seguro com Proteção de Dados LGPD
     </div>
 
 </body>
